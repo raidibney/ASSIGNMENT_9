@@ -14,6 +14,20 @@ const AddPetsPage = () => {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     console.log("Form submitted with data:", data);
+
+//fetching the backedn api 
+   
+    const res=await fetch("http://localhost:5000/add-pet", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+
+    const result=await res.json();
+    console.log(result);
+
     setIsPending(true);
 
     try {
