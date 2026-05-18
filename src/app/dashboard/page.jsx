@@ -1,8 +1,10 @@
+// src/app/dashboard/page.jsx
 "use client";
 
 import { useSearchParams } from "next/navigation";
+// 1. Import your existing add pet page component
+import AddPetsPage from "../add-pets/page"; 
 
-// Sub-components representing your layout requirements
 function MyRequestsView() {
   return (
     <div className="space-y-4">
@@ -15,14 +17,14 @@ function MyRequestsView() {
   );
 }
 
+// 2. Render it inside the view instead of the placeholder
 function AddPetView() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold text-foreground">Add a Pet for Adoption</h1>
       <p className="text-sm text-muted-foreground">Fill out the form details below to list a new pet on the marketplace.</p>
       <div className="rounded-lg border p-6 bg-background">
-        {/* You can drop your form inputs right here */}
-        <p className="text-sm text-muted-foreground">Pet profile form placeholder.</p>
+        <AddPetsPage />
       </div>
     </div>
   );
@@ -42,9 +44,8 @@ function MyListingsView() {
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get("tab") || "my-requests"; // Default tab matching layout fallback
+  const currentTab = searchParams.get("tab") || "my-requests";
 
-  // Dynamically switch sections based on active URL tab param
   switch (currentTab) {
     case "my-requests":
       return <MyRequestsView />;

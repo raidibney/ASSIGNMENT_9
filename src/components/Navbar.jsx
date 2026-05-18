@@ -38,13 +38,7 @@ export default function Navbar() {
             <Link href="/" className={linkStyle("/")}>Home</Link>
             <Link href="/all-pets" className={linkStyle("/all-pets")}>All Pets</Link>
             
-            {/* Private Links */}
-            {isLoggedIn && (
-              <>
-                <Link href="/my-requests" className={linkStyle("/my-requests")}>My Requests</Link>
-                <Link href="/add-pet" className={linkStyle("/add-pet")}>Add Pet</Link>
-              </>
-            )}
+         
           </div>
 
           {/* Auth Button / Profile Dropdown (Desktop) */}
