@@ -1,3 +1,6 @@
+import { Button } from "@heroui/react";
+import Link from "next/link"; // Fixed: Imported the Next.js routing Link instead of the Lucide icon
+
 const allPets = async () => {
     const res = await fetch("http://localhost:5000/add-pet");
     const pets = await res.json();
@@ -8,7 +11,7 @@ const allPets = async () => {
                 All Pets Available for Adoption
             </h1>
 
-            {/* Responsive Responsive Grid Layout */}
+            {/* Responsive Grid Layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pets.map((pet) => (
                     <div 
@@ -62,23 +65,37 @@ const allPets = async () => {
                                     </span>
                                 </div>
 
-                               <p className="text-sm text-foreground/80 line-clamp-3 italic mb-4">
-    {"\""}{pet.description.trim()}{"\""}
-</p>
+                                <p className="text-sm text-foreground/80 line-clamp-3 italic mb-4">
+                                    {"\""}{pet.description.trim()}{"\""}
+                                </p>
                             </div>
 
-                            {/* Card Footer */}
-                            <div className="border-t pt-4 mt-auto flex items-center justify-between text-xs text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                    </svg>
-                                    <span>{pet.location}</span>
+                            {/* Card Footer Actions */}
+                            <div className="border-t pt-4 mt-auto flex flex-col gap-3">
+                                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                    <div className="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                        </svg>
+                                        <span>{pet.location}</span>
+                                    </div>
+                                    <span className="font-semibold text-primary uppercase text-[11px] tracking-wider">
+                                        {pet.species}
+                                    </span>
                                 </div>
-                                <span className="font-semibold text-primary uppercase text-[11px] tracking-wider">
-                                    {pet.species}
-                                </span>
+
+                                {/* HeroUI Details Button */}
+                                <Link href={`/all-pets/${pet._id}`}>
+                                    <Button 
+                                        as="a"
+                                        color="primary" 
+                                        variant="flat" 
+                                        className="w-full font-semibold text-sm rounded-lg"
+                                    >
+                                        View Details
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
