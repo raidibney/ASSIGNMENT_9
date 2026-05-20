@@ -1,111 +1,201 @@
 "use client";
 
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Heart, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, Sparkles, ShieldCheck } from "lucide-react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 export default function Banner() {
+  const containerRef = useRef(null);
+  
+  // High-performance smooth spring mouse positions for ambient grid highlighting
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  const springConfig = { damping: 30, stiffness: 200, mass: 0.5 };
+  const glowX = useSpring(mouseX, springConfig);
+  const glowY = useSpring(mouseY, springConfig);
+
+  // Parallax shifts for the multi-layered pet composition cards
+  const cardX = useSpring(useTransform(mouseX, [-400, 400], [-15, 15]), springConfig);
+  const cardY = useSpring(useTransform(mouseY, [-400, 400], [-15, 15]), springConfig);
+
+  function handleMouseMove(e) {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    // Calculate mouse coordinates relative to the center of the viewport link container
+    const x = e.clientX - (rect.left + rect.width / 2);
+    const y = e.clientY - (rect.top + rect.height / 2);
+    mouseX.set(x);
+    mouseY.set(y);
+  }
+
+  function handleMouseLeave() {
+    mouseX.set(0);
+    mouseY.set(0);
+  }
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-16 lg:py-24">
-      {/* Decorative Background Blobs */}
-      <div className="absolute top-0 left-1/4 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute bottom-10 right-10 -z-10 h-96 w-96 rounded-full bg-amber-500/5 blur-3xl" />
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-background px-4 sm:px-6 lg:px-8 py-16"
+    >
+      {/* BACKGROUND GRAPHIC LAYER: Technical matrix mesh with active radial torch spotlight tracking */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(128,128,128,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.04)_1px,transparent_1px)] bg-[size:32px_32px]" />
+      
+      <motion.div 
+        style={{
+          x: glowX,
+          y: glowY,
+          transform: "translate(-50%, -50%)"
+        }}
+        className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-primary/10 dark:bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10"
+      />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 relative z-10">
+        
+        {/* ================= LEFT CONTROLS CONTAINER ================= */}
+        <div className="w-full lg:w-[55%] text-center lg:text-left space-y-8">
           
-          {/* Left Column: Text & CTA */}
-          <div className="text-center lg:col-span-7 lg:text-left space-y-6">
-            {/* Badge */}
-            <div className="inline-flex items-center space-x-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5 fill-current" />
-              <span>Find Your Furry Family Today</span>
-            </div>
+          {/* Futuristic Stacked Header Label */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="inline-flex items-center space-x-2 bg-zinc-900/5 dark:bg-white/5 border border-black/5 dark:border-white/10 px-3 py-1.5 rounded-xl shadow-sm"
+          >
+            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black tracking-widest uppercase text-muted-foreground">
+              Global Adoption Gateway
+            </span>
+          </motion.div>
 
-            {/* Title */}
-            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl leading-tight">
-              Every Pet Deserves a <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-primary to-amber-600 bg-clip-text text-transparent">
-                Loving Forever Home
+          {/* Liquid Staggered Typography Layout */}
+          <div className="space-y-3">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.95]">
+              <span className="block text-muted-foreground font-light text-2xl sm:text-4xl tracking-normal mb-1">
+                A brand new life for
+              </span>
+              Every Single <br />
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-amber-500 bg-clip-text text-transparent font-extrabold">
+                Beautiful Companion
               </span>
             </h1>
-
-            {/* Description */}
-            <p className="mx-auto max-w-2xl text-base text-muted-foreground sm:text-lg lg:mx-0 leading-relaxed">
-              PawsomeAdopt connects compassionate families with delightful pets waiting for a second chance. Adopt, dont shop, and experience the pure, unconditional love a companion brings to your life.
-            </p>
-
-            {/* CTA Button */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-              <Link
-                href="/all-pets"
-                className="group inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
-              >
-                <span>Adopt Now</span>
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              
-              <Link
-                href="/dashboard?tab=add-pet"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-input bg-background px-6 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-all w-full sm:w-auto"
-              >
-                Rehome a Pet
-              </Link>
-            </div>
-
-            {/* Quick Stats / Trust Indicators */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t max-w-md mx-auto lg:mx-0">
-              <div>
-                <p className="text-2xl font-bold text-foreground">1,200+</p>
-                <p className="text-xs text-muted-foreground">Pets Adopted</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">450+</p>
-                <p className="text-xs text-muted-foreground">Active Listings</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">99%</p>
-                <p className="text-xs text-muted-foreground">Happy Families</p>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Visual Image Grid */}
-          <div className="relative lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md h-[400px]">
-              
-              {/* Main Large Image (Dog) */}
-              <div className="absolute top-0 right-4 w-[75%] h-[75%] rounded-3xl overflow-hidden shadow-2xl border-4 border-background rotate-2 hover:rotate-0 transition-transform duration-300">
-                <img
-                  src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=600"
-                  alt="Happy dog looking up"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-muted-foreground max-w-xl text-sm sm:text-base font-medium leading-relaxed"
+          >
+            We architecture direct premium interactions between certified regional adoption agencies and protective families. Step forward to protect an innocent companion today.
+          </motion.p>
 
-              {/* Overlapping Smaller Image (Cat) */}
-              <div className="absolute bottom-4 left-4 w-[55%] h-[55%] rounded-3xl overflow-hidden shadow-2xl border-4 border-background -rotate-6 hover:rotate-0 transition-transform duration-300">
-                <img
-                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=500"
-                  alt="Cute kitten staring"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          {/* Action Hub Panels */}
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <Link href="/all-pets" className="w-full sm:w-auto">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-xl bg-foreground text-background px-6 text-xs font-black uppercase tracking-widest shadow-md hover:bg-foreground/90 transition-all"
+              >
+                <span>Initialize Match</span>
+                <ArrowRight className="ml-2 h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+              </motion.div>
+            </Link>
 
-              {/* Decorative Card Badge */}
-              <div className="absolute bottom-16 right-0 bg-background p-3 rounded-2xl shadow-xl flex items-center space-x-3 border animate-bounce duration-1000">
-                <div className="p-2 rounded-xl bg-destructive/10 text-destructive">
-                  <Heart className="h-5 w-5 fill-current" />
-                </div>
-                <div className="text-left pr-2">
-                  <p className="text-xs font-bold text-foreground">Save a Life</p>
-                  <p className="text-[10px] text-muted-foreground">They need you</p>
-                </div>
-              </div>
+            <Link href="/dashboard?tab=add-pet" className="w-full sm:w-auto">
+              <motion.div
+                whileHover={{ scale: 1.02, backgroundColor: "rgba(128,128,128,0.08)" }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-xl border border-border/80 bg-transparent px-6 text-xs font-black uppercase tracking-widest text-foreground transition-all"
+              >
+                Register Pet
+              </motion.div>
+            </Link>
+          </div>
 
+          {/* Flat Minimalist Feature Tokens */}
+          <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6 pt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <span>Identity Verified Users</span>
+            </div>
+            <div className="hidden sm:block h-1 w-1 rounded-full bg-muted-foreground/40" />
+            <div className="flex items-center space-x-2">
+              <Heart className="h-4 w-4 text-purple-500" />
+              <span>Zero-Cost Infrastructure</span>
             </div>
           </div>
 
         </div>
+
+        {/* ================= RIGHT FLOATING COMPOSITION DECK ================= */}
+        <div className="w-full lg:w-[40%] flex justify-center items-center">
+          <motion.div 
+            style={{ x: cardX, y: cardY }}
+            className="relative w-full max-w-[380px] h-[400px] flex items-center justify-center"
+          >
+            {/* Ambient Background Aura specifically linked behind cards */}
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent rounded-[32px] blur-2xl -z-10" />
+
+            {/* CARD 1: Large Base Card (Dog Portfolio Block) */}
+            <motion.div 
+              whileHover={{ scale: 1.03, zIndex: 30 }}
+              className="absolute top-0 left-0 w-[75%] h-[70%] bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-2.5 rounded-[24px] shadow-xl"
+            >
+              <div className="w-full h-full rounded-[16px] overflow-hidden relative group/img">
+                <img 
+                  src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=600" 
+                  alt="Dog Card" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+                  draggable="false"
+                />
+                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md text-white font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-md">
+                  Active Listing
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CARD 2: Secondary Offset Card (Cat Portfolio Block) */}
+            <motion.div 
+              whileHover={{ scale: 1.04, zIndex: 30 }}
+              className="absolute bottom-0 right-0 w-[70%] h-[65%] bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-2.5 rounded-[24px] shadow-2xl z-20"
+            >
+              <div className="w-full h-full rounded-[16px] overflow-hidden relative group/img2">
+                <img 
+                  src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=500" 
+                  alt="Cat Card" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img2:scale-105"
+                  draggable="false"
+                />
+                <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-md shadow-md">
+                  98% Match
+                </div>
+              </div>
+            </motion.div>
+
+            {/* CARD 3: Floating Live Action Counter Micro-Widget */}
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/3 -right-6 bg-background border border-border p-3 rounded-xl shadow-xl flex items-center space-x-3 z-30"
+            >
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Sparkles className="h-4 w-4 fill-current" />
+              </div>
+              <div className="text-left pr-2">
+                <div className="text-xs font-black tracking-tight text-foreground">1.2K +</div>
+                <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Saved Lives</div>
+              </div>
+            </motion.div>
+
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

@@ -1,106 +1,38 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
-import Link from "next/link";
+import Link from "next/link"; 
 
-const AllPets = () => {
-    const [pets, setPets] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedSpecies, setSelectedSpecies] = useState("all");
-    const [loading, setLoading] = useState(true);
-
-    // Fetch data on the client side
-    useEffect(() => {
-        const fetchPets = async () => {
-            try {
-                const res = await fetch("http://localhost:5000/add-pet");
-                const data = await res.json();
-                setPets(data);
-            } catch (error) {
-                console.error("Failed to fetch pets:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPets();
-    }, []);
-
-    // Extract unique species dynamically from the fetched backend data
-    const uniqueSpecies = ["all", ...new Set(pets.map((pet) => pet.species?.toLowerCase()).filter(Boolean))];
-
-    // Filter logic: Handles both search text and dropdown selection simultaneously
-    const filteredPets = pets.filter((pet) => {
-        const matchesSearch = 
-            pet.petName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-            pet.breed?.toLowerCase().includes(searchQuery.toLowerCase());
-        
-        const matchesSpecies = 
-            selectedSpecies === "all" || 
-            pet.species?.toLowerCase() === selectedSpecies.toLowerCase();
-
-        return matchesSearch && matchesSpecies;
+const FeaturedPets = async () => {
+    // 1. Fetch data from your existing backend API
+    const res = await fetch("http://localhost:5000/add-pet", {
+        next: { revalidate: 60 } // Optional: caches and updates data every 60 seconds
     });
+    const pets = await res.json();
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                <p className="text-lg text-muted-foreground animate-pulse">Loading available pets...</p>
-            </div>
-        );
-    }
+    // 2. Updated: Limit the array to show exactly 3 pets
+    const featuredPets = pets.slice(0, 3);    
 
-    return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-            <h1 className="text-3xl font-extrabold text-foreground mb-8 text-center sm:text-left">
-                All Pets Available for Adoption
-            </h1>
-
-            {/* Filter Controls Section */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-card p-4 rounded-xl border">
-                {/* Search Input */}
-                <div className="flex-1">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                        Search Pets
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Search by name or breed..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-3 py-2 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                </div>
-                
-                {/* Species Dropdown Filter */}
-                <div className="w-full sm:w-64">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                        Filter by Species
-                    </label>
-                    <select
-                        value={selectedSpecies}
-                        onChange={(e) => setSelectedSpecies(e.target.value)}
-                        className="w-full px-3 py-2 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 capitalize"
-                    >
-                        {uniqueSpecies.map((species) => (
-                            <option key={species} value={species}>
-                                {species === "all" ? "All Species" : species}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+    return (         
+        <div className="max-w-7xl mx-auto px-4 py-12">      
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <div>      
+                    <h2 className="text-3xl font-extrabold text-foreground text-center sm:text-left">
+                        Featured Pets    
+                    </h2>    
+                    <p className="text-muted-foreground text-sm mt-1 text-center sm:text-left">
+                        Meet some of our wonderful friends looking for a forever home.
+                    </p>   
+                </div>   
+                {/* Link to navigate to the full "All Pets" page */}
+                <Link href="/all-pets">
+                    <Button color="primary" variant="ghost" className="font-semibold">
+                        View All Pets →
+                    </Button>  
+                </Link>  
             </div>
 
-            {/* No Results Fallback UI */}
-            {filteredPets.length === 0 && (
-                <div className="text-center py-12 bg-muted/20 rounded-xl border border-dashed mb-8">
-                    <p className="text-muted-foreground text-base">No matching pets found. Try changing your search query or filters.</p>
-                </div>
-            )}
-
-            {/* Responsive Grid Layout */}
+            {/* Responsive Grid Layout */}  
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPets.map((pet) => (
+                {featuredPets.map((pet) => (
                     <div 
                         key={pet._id} 
                         className="flex flex-col bg-card text-card-foreground border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
@@ -123,7 +55,7 @@ const AllPets = () => {
                             <div>
                                 <div className="flex justify-between items-start mb-2">
                                     <h2 className="text-2xl font-bold capitalize truncate">
-                                        {pet.petName?.trim()}
+                                        {pet.petName.trim()}
                                     </h2>
                                     <span className="text-xs bg-muted text-muted-foreground font-medium px-2.5 py-1 rounded">
                                         {pet.gender}
@@ -153,7 +85,7 @@ const AllPets = () => {
                                 </div>
 
                                 <p className="text-sm text-foreground/80 line-clamp-3 italic mb-4">
-                                    {"\""}{pet.description?.trim()}{"\""}
+                                    {"\""}{pet.description.trim()}{"\""}
                                 </p>
                             </div>
 
@@ -172,9 +104,10 @@ const AllPets = () => {
                                     </span>
                                 </div>
 
-                                {/* Simplified Next.js 15/16 Routing */}
+                                {/* Redirects to the dynamic route all-pets/[id] */}
                                 <Link href={`/all-pets/${pet._id}`}>
                                     <Button 
+                                        as="a"
                                         color="primary" 
                                         variant="flat" 
                                         className="w-full font-semibold text-sm rounded-lg"
@@ -191,4 +124,4 @@ const AllPets = () => {
     );
 };
 
-export default AllPets;
+export default FeaturedPets;

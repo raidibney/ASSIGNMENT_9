@@ -64,9 +64,9 @@ export default function NotFound() {
           <Link href="/dashboard" className="hover:text-primary transition-colors">
             User Dashboard
           </Link>
-        </div>
+        </div> 
 
-      </div>
+      </div> 
     </div>
   );
 }
