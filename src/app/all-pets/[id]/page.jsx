@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PetdetailsModal from "@/components/PetdetailsModal";
+import DeleteAlert from "@/components/DeleteAlert"; // Imported DeleteAlert component
 
 const Detailspage = ({ params }) => {
     const [id, setId] = useState(null);
@@ -10,6 +11,7 @@ const Detailspage = ({ params }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false); // Managed state for Delete Modal toggle
 
     useEffect(() => {
         params.then((resolvedParams) => {
@@ -44,9 +46,8 @@ const Detailspage = ({ params }) => {
         fetchPetDetails();
     }, [id]);
 
-    // NEW FUNCTION: Updates local UI state when database modifications succeed
+    // Updates local UI state when database modifications succeed
     const handlePetDetailsUpdate = (updatedData) => {
-        // If backend returns the entire object, use it; otherwise merge changes manually
         setPetDetails((prev) => ({ ...prev, ...updatedData }));
     };
 
@@ -101,19 +102,33 @@ const Detailspage = ({ params }) => {
                         <button onClick={() => setIsModalOpen(true)} className="flex-1 btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors">
                             Edit Details
                         </button>
-                        <button className="flex-1 btn btn-error bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors">
+                        
+                        {/* CHANGED: Clicking this button now flips 'isDeleteOpen' to true */}
+                        <button 
+                            onClick={() => setIsDeleteOpen(true)} 
+                            className="flex-1 btn btn-error bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors"
+                        >
                             Delete Pet
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* FIXED: Added onUpdateSuccess handler attribute below */}
+            {/* Edit Modal Render Hook */}
             {isModalOpen && (
                 <PetdetailsModal 
                     petData={petDetails} 
                     onClose={() => setIsModalOpen(false)} 
                     onUpdateSuccess={handlePetDetailsUpdate}
+                />
+            )}
+
+            {/* NEW: Conditional rendering injection for the Delete Alert popup component */}
+            {isDeleteOpen && (
+                <DeleteAlert 
+                    petId={petDetails._id || petDetails.id} 
+                    petName={petDetails.petName} 
+                    onClose={() => setIsDeleteOpen(false)} 
                 />
             )}
         </div>
