@@ -12,7 +12,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const isLoggedIn = true; 
+  // Set this to false to test the "Logged Out" state with Login/Signup buttons
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -38,7 +39,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Ultra-Clean Sliding Hover Menu (Desktop) */}
+          {/* Sliding Hover Menu (Desktop) */}
           <div className="hidden md:flex items-center space-x-1 relative h-full">
             {navLinks.map((link, index) => {
               const isActive = pathname === link.path;
@@ -54,7 +55,6 @@ export default function Navbar() {
                 >
                   <span className="relative z-10">{link.name}</span>
                   
-                  {/* Sliding Background Hover Highlight */}
                   {hoveredIndex === index && (
                     <motion.span
                       layoutId="navHoverBg"
@@ -66,7 +66,6 @@ export default function Navbar() {
                     />
                   )}
 
-                  {/* Sliding Active Line Tracker */}
                   {isActive && (
                     <motion.span
                       layoutId="activeLine"
@@ -79,7 +78,7 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Action Tools Cluster */}
+          {/* Action Tools Cluster (Desktop) */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="p-1 rounded-lg bg-muted/40 border border-divider/50">
               <ThemeSwitcher />
@@ -93,7 +92,6 @@ export default function Navbar() {
                   </div>
                 </button>
 
-                {/* Micro-Animated Minimalist Dropdown Panel */}
                 <div className="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-divider bg-background p-1.5 shadow-xl opacity-0 scale-95 pointer-events-none group-focus-within:opacity-100 group-focus-within:scale-100 group-focus-within:pointer-events-auto group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 text-foreground">
                   <Link
                     href="/dashboard"
@@ -104,7 +102,10 @@ export default function Navbar() {
                   </Link>
                   <div className="my-1 border-t border-divider" />
                   <button
-                    onClick={() => console.log("Logging out...")}
+                    onClick={() => {
+                      console.log("Logging out...");
+                      setIsLoggedIn(false);
+                    }}
                     className="flex w-full items-center px-3 py-2 text-sm rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -113,12 +114,20 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-              >
-                Login
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
 
@@ -170,7 +179,7 @@ export default function Navbar() {
                   <ThemeSwitcher />
                 </div>
                 <button
-                  onClick={() => { toggleMenu(); console.log("Logging out..."); }}
+                  onClick={() => { toggleMenu(); setIsLoggedIn(false); console.log("Logging out..."); }}
                   className="flex w-full items-center px-4 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   <LogOut className="mr-2 h-4 w-4" /> Logout
@@ -182,13 +191,22 @@ export default function Navbar() {
                   <span className="text-sm font-medium text-muted-foreground">Appearance</span>
                   <ThemeSwitcher />
                 </div>
-                <Link
-                  href="/login"
-                  onClick={toggleMenu}
-                  className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
-                >
-                  Login
-                </Link>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Link
+                    href="/login"
+                    onClick={toggleMenu}
+                    className="flex w-full items-center justify-center rounded-lg border border-divider px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-all"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={toggleMenu}
+                    className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
               </div>
             )}
           </motion.div>

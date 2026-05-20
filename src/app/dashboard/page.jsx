@@ -1,6 +1,6 @@
 // src/app/dashboard/page.jsx
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useSearchParams } from "next/navigation";
 // 1. Import your existing add pet page component
 import AddPetsPage from "../add-pets/page"; 

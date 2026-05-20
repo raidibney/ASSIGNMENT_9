@@ -1,10 +1,25 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ClipboardList, PlusCircle, FolderHeart, User } from "lucide-react";
 
+// 1. The main layout wrapper with a Suspense Boundary
 export default function DashboardLayout({ children }) {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-muted/30">
+        <p className="text-sm text-muted-foreground animate-pulse">Loading dashboard elements...</p>
+      </div>
+    }>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </Suspense>
+  );
+}
+
+// 2. The inner component holding your actual code and hook logic
+function DashboardLayoutContent({ children }) {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab") || "my-requests"; // Default view
 
