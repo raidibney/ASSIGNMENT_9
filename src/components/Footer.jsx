@@ -21,19 +21,19 @@ export default function Footer() {
 
   return (
     <footer className="relative w-full border-t border-border/60 bg-background text-muted-foreground overflow-hidden select-none">
-      {/* Structural Tech Background Matrix Alignment */}
+
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(128,128,128,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.01)_1px,transparent_1px)] bg-[size:24px_24px]" />
       
-      {/* Ambient Micro Glow Fields */}
+   
       <div className="absolute bottom-0 left-0 w-[350px] h-[250px] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
       <div className="absolute bottom-0 right-0 w-[300px] h-[200px] bg-amber-500/5 rounded-full blur-[90px] pointer-events-none -z-10" />
 
       <div className="mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6 lg:px-8 relative z-10">
         
-        {/* TOP DECK: CORE NAVIGATION MESH */}
+     
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-12">
           
-          {/* BRAND ARCHITECTURE PANEL */}
+        
           <div className="md:col-span-5 flex flex-col space-y-4 pr-0 md:pr-8">
             <Link href="/" className="group inline-flex items-center space-x-2.5 text-foreground font-black text-xl tracking-tighter">
               <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
@@ -52,7 +52,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* QUICK LINKS COMPONENT BLOCK */}
+         
           <div className="md:col-span-2 flex flex-col space-y-3">
             <span className="text-[10px] font-black tracking-widest uppercase text-foreground/90 flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-primary" /> System Index
@@ -72,7 +72,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* CONTACT VECTOR CONNECTIONS */}
+        
           <div className="md:col-span-3 flex flex-col space-y-3">
             <span className="text-[10px] font-black tracking-widest uppercase text-foreground/90 flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-amber-500" /> Endpoint Data
@@ -108,7 +108,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* SOCIAL NETWORK HUB */}
+        
           <div className="md:col-span-2 flex flex-col space-y-4">
             <span className="text-[10px] font-black tracking-widest uppercase text-foreground/90 flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-indigo-500" /> Stream Feed
@@ -148,12 +148,12 @@ export default function Footer() {
 
         </div>
 
-        {/* SYSTEM LINE SPLIT ACCENT */}
+      
         <div className="relative w-full h-[1px] bg-border/60 my-6">
           <div className="absolute top-0 left-0 h-[1px] w-1/4 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         </div>
 
-        {/* BASE SYSTEM META FOOTER */}
+
         <div className="flex flex-col md:flex-row items-center justify-between text-[11px] font-mono font-bold tracking-wider uppercase text-muted-foreground/60 space-y-4 md:space-y-0">
           <p className="hover:text-muted-foreground transition-colors duration-200">
             &copy; {currentYear} PawsomeAdopt. Core Protocol Registry.

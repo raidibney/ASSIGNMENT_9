@@ -5,7 +5,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         
-        // 1. Gather all the updated values from the form inputs
+      
         const formData = new FormData(e.target);
         const updatedPet = {
             petName: formData.get("petName"),
@@ -17,9 +17,9 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
         };
 
         try {
-            // 2. Send the update request to your backend server
+            
             const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${petData._id || petData.id}`, {
-                method: "PUT", // or 'PATCH' depending on your backend route setup
+                method: "PUT", 
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -29,9 +29,9 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
             if (res.ok) {
                 const updatedDataFromBackend = await res.json();
                 
-                // 3. Inform parent component to refresh its state with the new data
+                
                 onUpdateSuccess(updatedDataFromBackend); 
-                onClose(); // Close modal on success
+                onClose(); 
             } else {
                 alert("Failed to update pet details on the server.");
             }
@@ -57,7 +57,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                         <label className="block text-sm font-medium text-gray-700">Pet Name</label>
                         <input 
                             type="text" 
-                            name="petName" // Added name attribute
+                            name="petName" 
                             defaultValue={petData?.petName} 
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                             required
@@ -69,7 +69,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                             <label className="block text-sm font-medium text-gray-700">Breed</label>
                             <input 
                                 type="text" 
-                                name="breed" // Added name attribute
+                                name="breed" 
                                 defaultValue={petData?.breed} 
                                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                             />
@@ -78,7 +78,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                             <label className="block text-sm font-medium text-gray-700">Age (Years)</label>
                             <input 
                                 type="number" 
-                                name="age" // Added name attribute
+                                name="age" 
                                 defaultValue={petData?.age} 
                                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                             />
@@ -89,7 +89,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                         <label className="block text-sm font-medium text-gray-700">Location</label>
                         <input 
                             type="text" 
-                            name="location" // Added name attribute
+                            name="location" 
                             defaultValue={petData?.location} 
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                         />
@@ -99,7 +99,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                         <label className="block text-sm font-medium text-gray-700">Adoption Fee (BDT)</label>
                         <input 
                             type="number" 
-                            name="adoptionFee" // Added name attribute
+                            name="adoptionFee" 
                             defaultValue={petData?.adoptionFee} 
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                         />
@@ -109,7 +109,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
                         <label className="block text-sm font-medium text-gray-700">Description</label>
                         <textarea 
                             rows="3"
-                            name="description" // Added name attribute
+                            name="description" 
                             defaultValue={petData?.description} 
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm text-gray-900 bg-white"
                         ></textarea>

@@ -9,10 +9,10 @@ const db = client.db("petDB"); // Matches your pet database name
 const auth = betterAuth({
     database: mongodbAdapter(db),
     emailAndPassword: {  
-        enabled: true // Necessary to enable email/password signups
+        enabled: true 
     },
     secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL // URL of this Express server (e.g., http://localhost:5000)
+    baseURL: process.env.BETTER_AUTH_URL 
 });
 
 module.exports = { auth };

@@ -8,7 +8,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 export default function Banner() {
   const containerRef = useRef(null);
   
-  // High-performance smooth spring mouse positions for ambient grid highlighting
+ 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   
@@ -16,14 +16,14 @@ export default function Banner() {
   const glowX = useSpring(mouseX, springConfig);
   const glowY = useSpring(mouseY, springConfig);
 
-  // Parallax shifts for the multi-layered pet composition cards
+
   const cardX = useSpring(useTransform(mouseX, [-400, 400], [-15, 15]), springConfig);
   const cardY = useSpring(useTransform(mouseY, [-400, 400], [-15, 15]), springConfig);
 
   function handleMouseMove(e) {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    // Calculate mouse coordinates relative to the center of the viewport link container
+   
     const x = e.clientX - (rect.left + rect.width / 2);
     const y = e.clientY - (rect.top + rect.height / 2);
     mouseX.set(x);
@@ -42,7 +42,7 @@ export default function Banner() {
       onMouseLeave={handleMouseLeave}
       className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-background px-4 sm:px-6 lg:px-8 py-16"
     >
-      {/* BACKGROUND GRAPHIC LAYER: Technical matrix mesh with active radial torch spotlight tracking */}
+     
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(128,128,128,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.04)_1px,transparent_1px)] bg-[size:32px_32px]" />
       
       <motion.div 
@@ -56,10 +56,10 @@ export default function Banner() {
 
       <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 relative z-10">
         
-        {/* ================= LEFT CONTROLS CONTAINER ================= */}
+       
         <div className="w-full lg:w-[55%] text-center lg:text-left space-y-8">
           
-          {/* Futuristic Stacked Header Label */}
+       
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -72,7 +72,7 @@ export default function Banner() {
             </span>
           </motion.div>
 
-          {/* Liquid Staggered Typography Layout */}
+       
           <div className="space-y-3">
             <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground leading-[0.95]">
               <span className="block text-muted-foreground font-light text-2xl sm:text-4xl tracking-normal mb-1">
@@ -94,7 +94,7 @@ export default function Banner() {
             We architecture direct premium interactions between certified regional adoption agencies and protective families. Step forward to protect an innocent companion today.
           </motion.p>
 
-          {/* Action Hub Panels */}
+         
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
             <Link href="/all-pets" className="w-full sm:w-auto">
               <motion.div
@@ -118,7 +118,7 @@ export default function Banner() {
             </Link>
           </div>
 
-          {/* Flat Minimalist Feature Tokens */}
+        
           <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6 pt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
             <div className="flex items-center space-x-2">
               <ShieldCheck className="h-4 w-4 text-primary" />
@@ -133,16 +133,16 @@ export default function Banner() {
 
         </div>
 
-        {/* ================= RIGHT FLOATING COMPOSITION DECK ================= */}
+      
         <div className="w-full lg:w-[40%] flex justify-center items-center">
           <motion.div 
             style={{ x: cardX, y: cardY }}
             className="relative w-full max-w-[380px] h-[400px] flex items-center justify-center"
           >
-            {/* Ambient Background Aura specifically linked behind cards */}
+            
             <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent rounded-[32px] blur-2xl -z-10" />
 
-            {/* CARD 1: Large Base Card (Dog Portfolio Block) */}
+           
             <motion.div 
               whileHover={{ scale: 1.03, zIndex: 30 }}
               className="absolute top-0 left-0 w-[75%] h-[70%] bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-2.5 rounded-[24px] shadow-xl"
@@ -160,7 +160,7 @@ export default function Banner() {
               </div>
             </motion.div>
 
-            {/* CARD 2: Secondary Offset Card (Cat Portfolio Block) */}
+          
             <motion.div 
               whileHover={{ scale: 1.04, zIndex: 30 }}
               className="absolute bottom-0 right-0 w-[70%] h-[65%] bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-2.5 rounded-[24px] shadow-2xl z-20"
@@ -178,7 +178,7 @@ export default function Banner() {
               </div>
             </motion.div>
 
-            {/* CARD 3: Floating Live Action Counter Micro-Widget */}
+          
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}

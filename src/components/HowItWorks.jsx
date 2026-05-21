@@ -48,14 +48,14 @@ export default function HowItWorks() {
 
   return (
     <section className="relative py-32 bg-background overflow-hidden select-none">
-      {/* Premium subtle mesh background overlay */}
+     
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(128,128,128,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
       
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           
-          {/* LEFT COLUMN: STICKY BRANDING & INTRO HEADLINE */}
+         
           <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-6">
             <div className="inline-flex items-center space-x-2 bg-muted dark:bg-zinc-900 border border-border px-3 py-1 rounded-xl">
               <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
@@ -74,7 +74,7 @@ export default function HowItWorks() {
               Hover over or scroll through the structural stack layout to preview how our modern deployment network simplifies your configuration.
             </p>
 
-            {/* Pagination style structural indicators */}
+      
             <div className="hidden lg:flex items-center space-x-2 pt-4">
               {steps.map((_, idx) => (
                 <div 
@@ -87,33 +87,32 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: THE 3D INTERLOCKING OVERLAPPING CARD DECK */}
           <div className="lg:col-span-7 relative min-h-[550px] w-full flex flex-col justify-start items-center">
             {steps.map((item, index) => {
               const IconComponent = item.icon;
               
-              // Calculate custom 3D offset styling transformations for stacking mechanics
+              
               const isHovered = hoveredIndex === index;
               const anyHovered = hoveredIndex !== null;
               
-              // Standard cascade baseline layout coordinates if nothing is actively hovered
+              
               let yOffset = index * 45;
               let scaleOffset = 1 - (steps.length - 1 - index) * 0.03;
               let zIndexValue = 10 + index;
               let opacityValue = 1;
 
-              // Interactive structural pop-up re-indexing values
+              
               if (anyHovered) {
                 if (isHovered) {
-                  yOffset = index * 35 - 15; // Pull card actively up and clear of the background
+                  yOffset = index * 35 - 15; 
                   scaleOffset = 1.02;
-                  zIndexValue = 50; // Pop directly to the top layer
+                  zIndexValue = 50; 
                 } else if (index < hoveredIndex) {
-                  yOffset = index * 35 - 25; // Tuck preceding cards deeper underneath
+                  yOffset = index * 35 - 25; 
                   scaleOffset = 0.94;
-                  opacityValue = 0.4; // Darken out inactive steps
+                  opacityValue = 0.4; 
                 } else {
-                  yOffset = index * 45 + 20; // Push subsequent items downward
+                  yOffset = index * 45 + 20; 
                   scaleOffset = 0.96;
                   opacityValue = 0.6;
                 }

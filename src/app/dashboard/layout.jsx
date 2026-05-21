@@ -18,10 +18,10 @@ export default function DashboardLayout({ children }) {
   );
 }
 
-// 2. The inner component holding your actual code and hook logic
+
 function DashboardLayoutContent({ children }) {
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get("tab") || "my-requests"; // Default view
+  const currentTab = searchParams.get("tab") || "my-requests"; 
 
   const sidebarLinks = [
     {

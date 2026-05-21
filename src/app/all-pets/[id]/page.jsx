@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 const Detailspage = ({ params }) => {
-    // Safely unwrap Next.js dynamic params promise hook structure
+  
     const resolvedParams = use(params);
     const id = resolvedParams?.id;
     const router = useRouter();
