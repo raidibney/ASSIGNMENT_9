@@ -10,38 +10,33 @@ const AllPets = () => {
     const [selectedSpecies, setSelectedSpecies] = useState("all");
     const [loading, setLoading] = useState(true);
 
-    // Fetch data on the client side
-    useEffect(() => {
-        const fetchPets = async () => {
-            // Guard clause: Avoid hitting a broken path if Vercel is reading the env string
-            if (!process.env.NEXT_PUBLIC_SERVER_URL) {
-                console.warn("NEXT_PUBLIC_SERVER_URL is not defined yet.");
-                return;
+  
+   // Inside your AllPets component
+useEffect(() => {
+    const fetchPets = async () => {
+        try {
+            // Updated endpoint to match backend
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/all-pets`);
+            
+            if (!res.ok) {
+                throw new Error(`Server responded with status: ${res.status}`);
             }
 
-            try {
-                // FIXED: Changed endpoint path from /all-pets to /add-pet to sync with your Express backend API
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`);
-                
-                if (!res.ok) {
-                    throw new Error(`Server responded with status: ${res.status}`);
-                }
+            const data = await res.json();
+            setPets(data);
+        } catch (error) {
+            console.error("Failed to fetch pets:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchPets();
+}, []);
 
-                const data = await res.json();
-                setPets(data);
-            } catch (error) {
-                console.error("Failed to fetch pets:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPets();
-    }, []);
-
-    // Extract unique species dynamically from the fetched backend data
+   
     const uniqueSpecies = ["all", ...new Set(pets.map((pet) => pet.species?.toLowerCase()).filter(Boolean))];
 
-    // Filter logic: Handles both search text and dropdown selection simultaneously
+   
     const filteredPets = pets.filter((pet) => {
         const matchesSearch = 
             pet.petName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -68,7 +63,7 @@ const AllPets = () => {
                 All Pets Available for Adoption
             </h1>
 
-            {/* Filter Controls Section */}
+         
             <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-card p-4 rounded-xl border">
                 {/* Search Input */}
                 <div className="flex-1">
@@ -103,7 +98,7 @@ const AllPets = () => {
                 </div>
             </div>
 
-            {/* No Results Fallback UI */}
+           
             {filteredPets.length === 0 && (
                 <div className="text-center py-12 bg-muted/20 rounded-xl border border-dashed mb-8">
                     <p className="text-muted-foreground text-base">No matching pets found. Try changing your search query or filters.</p>

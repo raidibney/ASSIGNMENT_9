@@ -1,76 +1,71 @@
 "use client";
 
-import { Button, FieldError, Input, Label, ListBox, TextArea, TextField } from '@heroui/react';
+import { Button, Input, Label, ListBox, TextArea, TextField, Select } from '@heroui/react';
 import React, { useState } from 'react';
-import { Select } from '@heroui/react';
-import toast from 'react-hot-toast'; // Ensure you have this installed
+import toast from 'react-hot-toast';
 
 const AddPetsPage = () => {
   const [isPending, setIsPending] = useState(false);
   
-  // State to track Select components specifically
-  const [selectValues, setSelectValues] = useState({
+  // Unified state for all form fields
+  const [formData, setFormData] = useState({
+    petName: "",
     species: "",
+    breed: "",
+    age: "",
     gender: "",
     vaccinationStatus: "",
-    healthStatus: ""
+    imageUrl: "",
+    healthStatus: "",
+    location: "",
+    adoptionFee: "",
+    ownerEmail: "",
+    description: ""
   });
+
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsPending(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-
-    // Merge form inputs with select values
-    const finalData = { ...data, ...selectValues };
-    
-    console.log("Submitting payload:", finalData);
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalData)
+        body: JSON.stringify(formData)
       });
 
       if (res.ok) {
         toast.success("Pet added successfully!");
-        // Optional: Reset form or navigate away
+        // Reset form
+        setFormData({
+          petName: "", species: "", breed: "", age: "", gender: "",
+          vaccinationStatus: "", imageUrl: "", healthStatus: "",
+          location: "", adoptionFee: "", ownerEmail: "", description: ""
+        });
       } else {
         toast.error("Failed to add pet.");
       }
     } catch (error) {
-      console.error("Error:", error);
       toast.error("Network error.");
     } finally {
       setIsPending(false);
     }
   };
 
-  // Helper to update state for selects
-  const handleSelectChange = (key, value) => {
-    setSelectValues(prev => ({ ...prev, [key]: value }));
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="p-10 space-y-8 text-white">
+    <form onSubmit={handleSubmit} className="p-10 space-y-8 text-white max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold">Add a <span className="text-pink-400">Pet Listing</span></h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <TextField name="petName" isRequired>
-          <Label>Pet Name *</Label>
-          <Input placeholder="e.g. Buddy" className="rounded-2xl" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TextField isRequired label="Pet Name *" value={formData.petName} onChange={(v) => handleChange("petName", v)}>
+          <Input placeholder="e.g. Buddy" />
         </TextField>
 
-        <Select 
-          selectedKey={selectValues.species} 
-          onSelectionChange={(key) => handleSelectChange("species", key)}
-          isRequired 
-          label="Species *" 
-          className="w-full"
-        >
+        <Select isRequired label="Species *" selectedKey={formData.species} onSelectionChange={(k) => handleChange("species", k)}>
           <ListBox>
             <ListBox.Item id="Dog">Dog</ListBox.Item>
             <ListBox.Item id="Cat">Cat</ListBox.Item>
@@ -78,25 +73,17 @@ const AddPetsPage = () => {
           </ListBox>
         </Select>
 
-        <TextField name="breed"><Label>Breed</Label><Input className="rounded-2xl" /></TextField>
-        <TextField name="age" type="number"><Label>Age</Label><Input className="rounded-2xl" /></TextField>
+        <TextField label="Breed" value={formData.breed} onChange={(v) => handleChange("breed", v)}><Input /></TextField>
+        <TextField label="Age" type="number" value={formData.age} onChange={(v) => handleChange("age", v)}><Input /></TextField>
 
-        <Select 
-          selectedKey={selectValues.gender} 
-          onSelectionChange={(key) => handleSelectChange("gender", key)}
-          label="Gender"
-        >
+        <Select label="Gender" selectedKey={formData.gender} onSelectionChange={(k) => handleChange("gender", k)}>
           <ListBox>
             <ListBox.Item id="Male">Male</ListBox.Item>
             <ListBox.Item id="Female">Female</ListBox.Item>
           </ListBox>
         </Select>
 
-        <Select 
-          selectedKey={selectValues.vaccinationStatus} 
-          onSelectionChange={(key) => handleSelectChange("vaccinationStatus", key)}
-          label="Vaccination Status"
-        >
+        <Select label="Vaccination Status" selectedKey={formData.vaccinationStatus} onSelectionChange={(k) => handleChange("vaccinationStatus", k)}>
           <ListBox>
             <ListBox.Item id="Fully Vaccinated">Fully Vaccinated</ListBox.Item>
             <ListBox.Item id="Not Vaccinated">Not Vaccinated</ListBox.Item>
@@ -104,43 +91,34 @@ const AddPetsPage = () => {
         </Select>
 
         <div className="md:col-span-2">
-            <TextField name="imageUrl" isRequired>
-                <Label>Pet Image URL</Label>
-                <Input type="url" className="rounded-2xl" />
-            </TextField>
+          <TextField isRequired label="Pet Image URL" type="url" value={formData.imageUrl} onChange={(v) => handleChange("imageUrl", v)}><Input /></TextField>
         </div>
 
-        <Select 
-          selectedKey={selectValues.healthStatus} 
-          onSelectionChange={(key) => handleSelectChange("healthStatus", key)}
-          isRequired 
-          label="Health Status *"
-        >
+        <Select isRequired label="Health Status *" selectedKey={formData.healthStatus} onSelectionChange={(k) => handleChange("healthStatus", k)}>
           <ListBox>
             <ListBox.Item id="Healthy">Healthy</ListBox.Item>
             <ListBox.Item id="Under Treatment">Under Treatment</ListBox.Item>
           </ListBox>
         </Select>
 
-        <TextField name="location" isRequired><Label>Location *</Label><Input className="rounded-2xl" /></TextField>
+        <TextField isRequired label="Location *" value={formData.location} onChange={(v) => handleChange("location", v)}><Input /></TextField>
         
         <div className="md:col-span-2">
-            <TextField name="adoptionFee" type="number"><Label>Adoption Fee ($)</Label><Input placeholder="0" /></TextField>
+          <TextField label="Adoption Fee ($)" type="number" value={formData.adoptionFee} onChange={(v) => handleChange("adoptionFee", v)}><Input /></TextField>
         </div>
         
         <div className="md:col-span-2">
-            <TextField name="ownerEmail" isRequired><Label>Contact Email *</Label><Input type="email" /></TextField>
+          <TextField isRequired label="Contact Email *" type="email" value={formData.ownerEmail} onChange={(v) => handleChange("ownerEmail", v)}><Input /></TextField>
         </div>
 
         <div className="md:col-span-2">
-          <TextField name="description" isRequired>
-            <Label>Description *</Label>
-            <TextArea className="rounded-3xl" />
+          <TextField isRequired label="Description *" value={formData.description} onChange={(v) => handleChange("description", v)}>
+            <TextArea className="min-h-[100px]" />
           </TextField>
         </div>
       </div>
 
-      <Button type="submit" isLoading={isPending} className="w-full bg-pink-500">
+      <Button type="submit" isLoading={isPending} className="w-full bg-pink-500 font-bold text-lg h-12">
         Add Pet Listing
       </Button>
     </form>
