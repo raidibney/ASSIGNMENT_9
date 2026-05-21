@@ -4,6 +4,7 @@ import HowItWorks from "@/components/HowItWorks";
 import SuccessStories from "@/components/SuccessStories";
 import WhyAdopt from "@/components/WhyAdopt";
 import Image from "next/image";
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   return (
