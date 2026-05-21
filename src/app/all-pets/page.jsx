@@ -11,20 +11,33 @@ const AllPets = () => {
     const [loading, setLoading] = useState(true);
 
     // Fetch data on the client side
-    useEffect(() => {
-        const fetchPets = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`);
-                const data = await res.json();
-                setPets(data);
-            } catch (error) {
-                console.error("Failed to fetch pets:", error);
-            } finally {
-                setLoading(false);
+    // Fetch data on the client side
+useEffect(() => {
+    const fetchPets = async () => {
+        // Guard clause: Avoid hitting a broken path if Vercel is reading the env string
+        if (!process.env.NEXT_PUBLIC_SERVER_URL) {
+            console.warn("NEXT_PUBLIC_SERVER_URL is not defined yet.");
+            return;
+        }
+
+        try {
+            // FIX: Changed endpoint path from /add-pet to /all-pets
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/all-pets`);
+            
+            if (!res.ok) {
+                throw new Error(`Server responded with status: ${res.status}`);
             }
-        };
-        fetchPets();
-    }, []);
+
+            const data = await res.json();
+            setPets(data);
+        } catch (error) {
+            console.error("Failed to fetch pets:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchPets();
+}, []);
 
     // Extract unique species dynamically from the fetched backend data
     const uniqueSpecies = ["all", ...new Set(pets.map((pet) => pet.species?.toLowerCase()).filter(Boolean))];
