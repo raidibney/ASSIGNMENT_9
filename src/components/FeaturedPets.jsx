@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const FeaturedPets = async () => {
     // 1. Fetch data from your existing backend API
-    const res = await fetch("http://localhost:5000/add-pet", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`, {
         next: { revalidate: 60 } // Optional: caches and updates data every 60 seconds
     });
     const pets = await res.json();

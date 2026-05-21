@@ -7,7 +7,7 @@ const DeleteAlert = ({ petId, petName, onClose }) => {
 
     const handleDelete = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/add-pet/${petId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${petId}`, {
                 method: "DELETE",
             });
 

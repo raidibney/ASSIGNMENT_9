@@ -18,7 +18,7 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
 
         try {
             // 2. Send the update request to your backend server
-            const res = await fetch(`http://localhost:5000/add-pet/${petData._id || petData.id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${petData._id || petData.id}`, {
                 method: "PUT", // or 'PATCH' depending on your backend route setup
                 headers: {
                     "Content-Type": "application/json",

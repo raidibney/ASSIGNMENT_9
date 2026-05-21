@@ -24,7 +24,7 @@ const Detailspage = ({ params }) => {
 
         const fetchPetDetails = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/add-pet/${id}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${id}`, {
                     cache: "no-store"
                 });
 
