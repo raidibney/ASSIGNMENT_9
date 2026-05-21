@@ -20,15 +20,13 @@ const Detailspage = ({ params }) => {
     }, [params]);
 
     useEffect(() => {
-        if (!id) return;
+        // Guard Clause: Prevent making network requests if id is missing or unhydrated
+        if (!id || id === "undefined" || !process.env.NEXT_PUBLIC_SERVER_URL) return;
 
         const fetchPetDetails = async () => {
-            // Guard clause: Avoid hitting an empty link if strings are updating
-            if (!process.env.NEXT_PUBLIC_SERVER_URL) return;
-
             try {
-                // FIX: Changed fetch route from /add-pet/${id} to /all-pets/${id}
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/all-pets/${id}`, {
+                // FIXED: Changed route path from /all-pets/${id} to /add-pet/${id} to match your Express API
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${id}`, {
                     cache: "no-store"
                 });
 
