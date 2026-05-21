@@ -1,38 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, use } from "react";
+import { authClient } from "@/lib/auth-client";
 import PetdetailsModal from "@/components/PetdetailsModal";
 import DeleteAlert from "@/components/DeleteAlert"; 
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Detailspage = ({ params }) => {
-    const [id, setId] = useState(null);
+    // Safely unwrap Next.js dynamic params promise hook structure
+    const resolvedParams = use(params);
+    const id = resolvedParams?.id;
+    const router = useRouter();
+
     const [petDetails, setPetDetails] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false); 
+    const [submittingRequest, setSubmittingRequest] = useState(false);
+
+    const { data: session } = authClient.useSession();
 
     useEffect(() => {
-        params.then((resolvedParams) => {
-            setId(resolvedParams.id);
-        });
-    }, [params]);
-
-    useEffect(() => {
-        // Guard Clause: Prevent making network requests if id is missing or unhydrated
         if (!id || id === "undefined" || !process.env.NEXT_PUBLIC_SERVER_URL) return;
 
         const fetchPetDetails = async () => {
             try {
-                // FIXED: Changed route path from /all-pets/${id} to /add-pet/${id} to match your Express API
                 const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${id}`, {
                     cache: "no-store"
                 });
 
                 if (!res.ok) {
                     setError(`The backend returned status code: ${res.status}`);
-                    setLoading(false);
                     return;
                 }
 
@@ -48,7 +48,48 @@ const Detailspage = ({ params }) => {
         fetchPetDetails();
     }, [id]);
 
-    // Updates local UI state when database modifications succeed
+    const handleAdoptPet = async () => {
+        if (!session?.user) {
+            toast.error("Please login first to adopt this pet.");
+            router.push("/login");
+            return;
+        }
+
+        setSubmittingRequest(true);
+        const requestPayload = {
+            petId: petDetails._id || petDetails.id,
+            petName: petDetails.petName,
+            imageUrl: petDetails.imageUrl,
+            breed: petDetails.breed,
+            adoptionFee: petDetails.adoptionFee,
+            userEmail: session.user.email,
+            userName: session.user.name,
+        };
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/adoption-requests`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestPayload),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                toast.error(data.message || "Failed to submit adoption application.");
+                return;
+            }
+
+            toast.success(`Application for ${petDetails.petName} submitted successfully!`);
+            router.push("/dashboard?tab=my-requests");
+        } catch (err) {
+            console.error(err);
+            toast.error("Network communication failure with application endpoint.");
+        } finally {
+            setSubmittingRequest(false);
+        }
+    };
+
     const handlePetDetailsUpdate = (updatedData) => {
         setPetDetails((prev) => ({ ...prev, ...updatedData }));
     };
@@ -98,8 +139,12 @@ const Detailspage = ({ params }) => {
                     </div>
 
                     <div className="flex flex-wrap sm:flex-nowrap gap-3 pt-4 border-t border-muted/30">
-                        <button className="flex-1 btn btn-success bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors">
-                            Adopt Pet
+                        <button 
+                            onClick={handleAdoptPet}
+                            disabled={submittingRequest}
+                            className="flex-1 btn btn-success bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors"
+                        >
+                            {submittingRequest ? "Processing..." : "Adopt Pet"}
                         </button>
                         <button onClick={() => setIsModalOpen(true)} className="flex-1 btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors">
                             Edit Details
