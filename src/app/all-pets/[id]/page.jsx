@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PetdetailsModal from "@/components/PetdetailsModal";
-import DeleteAlert from "@/components/DeleteAlert"; // Imported DeleteAlert component
+import DeleteAlert from "@/components/DeleteAlert"; 
 
 const Detailspage = ({ params }) => {
     const [id, setId] = useState(null);
@@ -11,7 +11,7 @@ const Detailspage = ({ params }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false); // Managed state for Delete Modal toggle
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false); 
 
     useEffect(() => {
         params.then((resolvedParams) => {
@@ -23,8 +23,12 @@ const Detailspage = ({ params }) => {
         if (!id) return;
 
         const fetchPetDetails = async () => {
+            // Guard clause: Avoid hitting an empty link if strings are updating
+            if (!process.env.NEXT_PUBLIC_SERVER_URL) return;
+
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${id}`, {
+                // FIX: Changed fetch route from /add-pet/${id} to /all-pets/${id}
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/all-pets/${id}`, {
                     cache: "no-store"
                 });
 
@@ -102,8 +106,6 @@ const Detailspage = ({ params }) => {
                         <button onClick={() => setIsModalOpen(true)} className="flex-1 btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors">
                             Edit Details
                         </button>
-                        
-                        {/* CHANGED: Clicking this button now flips 'isDeleteOpen' to true */}
                         <button 
                             onClick={() => setIsDeleteOpen(true)} 
                             className="flex-1 btn btn-error bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-center transition-colors"
@@ -114,7 +116,6 @@ const Detailspage = ({ params }) => {
                 </div>
             </div>
 
-            {/* Edit Modal Render Hook */}
             {isModalOpen && (
                 <PetdetailsModal 
                     petData={petDetails} 
@@ -123,7 +124,6 @@ const Detailspage = ({ params }) => {
                 />
             )}
 
-            {/* NEW: Conditional rendering injection for the Delete Alert popup component */}
             {isDeleteOpen && (
                 <DeleteAlert 
                     petId={petDetails._id || petDetails.id} 
