@@ -16,7 +16,7 @@ useEffect(() => {
     const fetchPets = async () => {
         try {
             // Updated endpoint to match backend
-          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`);
+          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets`);
             
             if (!res.ok) {
                 throw new Error(`Server responded with status: ${res.status}`);
