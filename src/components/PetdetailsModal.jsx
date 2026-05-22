@@ -1,11 +1,11 @@
 "use client";
 
-const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
+// Added petId to the props
+const PetdetailsModal = ({ petData, petId, onClose, onUpdateSuccess }) => {
     
     const handleUpdate = async (e) => {
         e.preventDefault();
         
-      
         const formData = new FormData(e.target);
         const updatedPet = {
             petName: formData.get("petName"),
@@ -17,9 +17,9 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
         };
 
         try {
-            
-            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${petData._id || petData.id}`, {
-                method: "PUT", 
+            // Updated URL to /add-pets/ and used updatedPet
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets/${petId}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -28,8 +28,6 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
 
             if (res.ok) {
                 const updatedDataFromBackend = await res.json();
-                
-                
                 onUpdateSuccess(updatedDataFromBackend); 
                 onClose(); 
             } else {
@@ -44,7 +42,6 @@ const PetdetailsModal = ({ petData, onClose, onUpdateSuccess }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative border border-gray-100">
-                
                 <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">
                     &times;
                 </button>

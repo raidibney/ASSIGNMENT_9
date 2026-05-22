@@ -1,5 +1,6 @@
 import { Button } from "@heroui/react";
-import Link from "next/link"; 
+import Link from "next/link";
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -7,145 +8,83 @@ const FeaturedPets = async () => {
     let featuredPets = [];
 
     try {
-       
-        console.log("HOMEPAGE FETCH URL IS:", `${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`);
+        const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets`;
+        const res = await fetch(url, { cache: 'no-store' });
 
-        
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet`, {
-            next: { revalidate: 60 } 
-        });
-
-       
-        const contentType = res.headers.get("content-type");
-        if (!res.ok || !contentType || !contentType.includes("application/json")) {
-            console.error(`Misfire! Expected JSON data but received status ${res.status} or an HTML page template.`);
-        } else {
-            const pets = await res.json();
-           
-            if (Array.isArray(pets)) {
-                featuredPets = pets.slice(0, 3);
-            }
+        if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) featuredPets = data.slice(0, 3);
         }
     } catch (error) {
-        
-        console.error("Failed to load featured pets securely:", error.message);
+        console.error("Fetch failed:", error.message);
     }
 
-    return (        
-        <div className="max-w-7xl mx-auto px-4 py-12">      
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <div>      
-                    <h2 className="text-3xl font-extrabold text-foreground text-center sm:text-left">
-                        Featured Pets    
-                    </h2>    
-                    <p className="text-muted-foreground text-sm mt-1 text-center sm:text-left">
-                        Meet some of our wonderful friends looking for a forever home.
-                    </p>   
-                </div>   
-               
+    return (
+        <section className="max-w-7xl mx-auto px-4 py-16">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <h2 className="text-4xl font-black text-foreground mb-2">Featured Friends</h2>
+                    <p className="text-muted-foreground text-lg">Meet our most recent additions waiting for a home.</p>
+                </div>
                 <Link href="/all-pets">
-                    <Button color="primary" variant="ghost" className="font-semibold">
+                    <Button color="primary" variant="flat" size="lg" className="font-bold">
                         View All Pets →
-                    </Button>  
-                </Link>  
+                    </Button>
+                </Link>
             </div>
 
-           
             {featuredPets.length === 0 ? (
-                <div className="text-center py-12 bg-muted/10 rounded-xl border border-dashed text-muted-foreground">
-                    Our featured friends are resting right now. Explore our full catalog using the button above!
+                <div className="text-center py-20 bg-default-100 rounded-3xl border-2 border-dashed">
+                    <p className="text-xl text-default-500">No pets currently featured. Check back soon!</p>
                 </div>
             ) : (
-               
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {featuredPets.map((pet) => (
-                        <div 
-                            key={pet._id} 
-                            className="flex flex-col bg-card text-card-foreground border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
-                        >
-                            <div className="relative h-48 w-full bg-muted">
+                        <div key={pet._id} className="group relative bg-content1 rounded-3xl border border-default-200 overflow-hidden hover:shadow-2xl transition-all duration-300">
+                            {/* Image Container */}
+                            <div className="relative h-64 overflow-hidden">
                                 <img
                                     src={pet.imageUrl || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=600"}
-                                    alt={pet.petName || "Adoptable Pet"}
-                                    className="w-full h-full object-cover"
+                                    alt={pet.petName}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
-                                {/* Adoption Fee Badge */}
-                                <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-sm font-semibold px-3 py-1 rounded-full shadow">
+                                <div className="absolute top-4 right-4 bg-primary text-white px-4 py-1 rounded-full font-bold shadow-lg">
                                     ৳ {Number(pet.adoptionFee || 0).toLocaleString()}
-                                </span>
+                                </div>
                             </div>
 
-                            {/* Card Content */}
-                            <div className="p-5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h2 className="text-2xl font-bold capitalize truncate">
-                                            {pet.petName?.trim() || "Lovely Companion"}
-                                        </h2>
-                                        <span className="text-xs bg-muted text-muted-foreground font-medium px-2.5 py-1 rounded capitalize">
-                                            {pet.gender || "Unknown"}
-                                        </span>
+                            {/* Content */}
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-2xl font-bold capitalize">{pet.petName}</h3>
+                                        <p className="text-default-500 font-medium">{pet.breed || "Mixed Breed"}</p>
                                     </div>
-
-                                    <p className="text-sm font-medium text-muted-foreground capitalize mb-3">
-                                        {pet.breed || "Mixed Breed"} • {pet.age || "N/A"} Years Old
-                                    </p>
-
-                                    {/* Status Badges */}
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                                            pet.vaccinationStatus === "Fully Vaccinated" 
-                                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
-                                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
-                                        }`}>
-                                            {pet.vaccinationStatus || "Pending Verification"}
-                                        </span>
-                                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                                            pet.healthStatus === "Healthy" 
-                                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" 
-                                                : "bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400"
-                                        }`}>
-                                            {pet.healthStatus || "Checking Status"}
-                                        </span>
-                                    </div>
-
-                                    <p className="text-sm text-foreground/80 line-clamp-3 italic mb-4">
-    &ldquo;{pet.description?.trim() || "No description provided yet. Visit details to learn more about this friendly pet."}&rdquo;
-</p>
+                                    <span className="bg-default-100 text-xs font-bold px-3 py-1 rounded-full uppercase">
+                                        {pet.gender}
+                                    </span>
                                 </div>
 
-                                {/* Card Footer Actions */}
-                                <div className="border-t pt-4 mt-auto flex flex-col gap-3">
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                        <div className="flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                            </svg>
-                                            <span className="truncate max-w-[120px]">{pet.location || "Main Center"}</span>
-                                        </div>
-                                        <span className="font-semibold text-primary uppercase text-[11px] tracking-wider">
-                                            {pet.species || "Pet"}
-                                        </span>
-                                    </div>
-
-                                   
-                                    <Link href={`/all-pets/${pet._id}`}>
-                                        <Button 
-                                            color="primary" 
-                                            variant="flat" 
-                                            className="w-full font-semibold text-sm rounded-lg"
-                                        >
-                                            View Details
-                                        </Button>
-                                    </Link>
+                                <div className="flex gap-2 mb-6">
+                                    <span className="text-xs bg-success-50 text-success-700 px-3 py-1 rounded-lg font-semibold">
+                                        {pet.healthStatus || "Healthy"}
+                                    </span>
+                                    <span className="text-xs bg-warning-50 text-warning-700 px-3 py-1 rounded-lg font-semibold">
+                                        {pet.age} Years Old
+                                    </span>
                                 </div>
+
+                                <Link href={`/all-pets/${pet._id}`}>
+                                    <Button fullWidth color="primary" variant="ghost" className="font-bold">
+                                        View Details
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
-        </div>
+        </section>
     );
 };
 

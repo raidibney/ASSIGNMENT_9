@@ -27,9 +27,9 @@ const Detailspage = ({ params }) => {
 
         const fetchPetDetails = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pet/${id}`, {
-                    cache: "no-store"
-                });
+              const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets/${id}`, {
+    cache: "no-store"
+});
 
                 if (!res.ok) {
                     setError(`The backend returned status code: ${res.status}`);
@@ -159,13 +159,14 @@ const Detailspage = ({ params }) => {
                 </div>
             </div>
 
-            {isModalOpen && (
-                <PetdetailsModal 
-                    petData={petDetails} 
-                    onClose={() => setIsModalOpen(false)} 
-                    onUpdateSuccess={handlePetDetailsUpdate}
-                />
-            )}
+           {isModalOpen && (
+    <PetdetailsModal 
+        petData={petDetails} 
+        petId={petDetails._id || petDetails.id} // Added this prop
+        onClose={() => setIsModalOpen(false)} 
+        onUpdateSuccess={handlePetDetailsUpdate}
+    />
+)}
 
             {isDeleteOpen && (
                 <DeleteAlert 
