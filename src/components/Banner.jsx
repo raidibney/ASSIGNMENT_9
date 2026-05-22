@@ -102,20 +102,12 @@ export default function Banner() {
                 whileTap={{ scale: 0.98 }}
                 className="group inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-xl bg-foreground text-background px-6 text-xs font-black uppercase tracking-widest shadow-md hover:bg-foreground/90 transition-all"
               >
-                <span>Initialize Match</span>
+                <span>Explore Pets</span>
                 <ArrowRight className="ml-2 h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
               </motion.div>
             </Link>
 
-            <Link href="/dashboard?tab=add-pet" className="w-full sm:w-auto">
-              <motion.div
-                whileHover={{ scale: 1.02, backgroundColor: "rgba(128,128,128,0.08)" }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-xl border border-border/80 bg-transparent px-6 text-xs font-black uppercase tracking-widest text-foreground transition-all"
-              >
-                Register Pet
-              </motion.div>
-            </Link>
+          
           </div>
 
         

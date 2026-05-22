@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import toast from "react-hot-toast"; // Added import
+import { useRouter } from "next/navigation"; // Added import
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -10,31 +12,30 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter(); // Initialize router
 
- const handleSignUp = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  // Call the signup method
-  const { data, error: authError } = await authClient.signUp.email({
-    email,
-    password,
-    name,
-    // Note: callbackURL is handled automatically by authClient
-  });
+    // Call the signup method
+    const { data, error: authError } = await authClient.signUp.email({
+      email,
+      password,
+      name,
+    });
 
-  if (authError) {
-    // If there is an error, show it to the user
-    setError(authError.message || "An error occurred during sign up.");
-    setLoading(false);
-  } else {
-    // On success, simply redirect the user to the home page.
-    // The session state will update automatically in the Navbar.
-    toast.success("Account created successfully!");
-    router.push("/"); 
-  }
-};
+    if (authError) {
+      // If there is an error, show it to the user
+      setError(authError.message || "An error occurred during sign up.");
+      setLoading(false);
+    } else {
+      // On success, show toast and redirect
+      toast.success("Account created successfully!");
+      router.push("/"); 
+    }
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 bg-background text-foreground">
