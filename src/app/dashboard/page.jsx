@@ -1,131 +1,92 @@
 "use client";
 
-export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import AddPetsPage from "../add-pets/page"; 
+import { PawPrint, Heart, Clock } from "lucide-react";
+import toast from "react-hot-toast";
 
-function MyRequestsView() {
+export default function DashboardPage() {
   const { data: session, isPending } = authClient.useSession();
-  const [requests, setRequests] = useState([]);
+  const [stats, setStats] = useState({
+    listings: 0,
+    requests: 0,
+    adoptions: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session?.user?.email) return;
+    // 1. Wait for auth check to finish
+    if (isPending) return;
 
-    const fetchMyRequests = async () => {
+    // 2. Define the async function inside the effect
+    const fetchDashboardData = async () => {
+      // 3. Move the logic inside to avoid top-level state updates
+      if (!session?.user?.email) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/adoption-requests?email=${session.user.email}`);
-        if (res.ok) {
-          const data = await res.json();
-          setRequests(data);
-        }
+        setLoading(true);
+        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+
+        // Fetch both sets of data
+        const [listingsRes, requestsRes] = await Promise.all([
+          fetch(`${baseUrl}/my-pets/${session.user.email}`),
+          fetch(`${baseUrl}/adoption-requests?email=${session.user.email}`)
+        ]);
+
+        const listingsData = await listingsRes.json();
+        const requestsData = await requestsRes.json();
+
+        // Calculate stats
+        setStats({
+          listings: listingsData.length || 0,
+          requests: requestsData.filter(req => req.status === "Pending").length || 0,
+          adoptions: requestsData.filter(req => req.status === "Accepted").length || 0,
+        });
       } catch (err) {
-        console.error("Error loading requests:", err);
+        toast.error("Failed to load dashboard data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMyRequests();
-  }, [session]);
+    fetchDashboardData();
+  }, [session, isPending]);
 
-  if (isPending || loading) {
-    return <div className="p-6 text-sm text-muted-foreground text-center">Loading adoption requests...</div>;
-  }
+  if (isPending || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+
+  const statItems = [
+    { name: "Active Listings", value: stats.listings, icon: PawPrint, color: "text-blue-500" },
+    { name: "Pending Requests", value: stats.requests, icon: Clock, color: "text-yellow-500" },
+    { name: "Total Adoptions", value: stats.adoptions, icon: Heart, color: "text-red-500" },
+  ];
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">My Adoption Requests</h1>
-        <p className="text-sm text-muted-foreground">Track the status updates on your submitted pet adoption requests.</p>
+    <div>
+      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {statItems.map((stat) => (
+          <div key={stat.name} className="p-6 rounded-xl border bg-card shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-muted-foreground text-sm font-medium">{stat.name}</span>
+              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+            </div>
+            <div className="text-3xl font-bold">{stat.value}</div>
+          </div>
+        ))}
       </div>
 
-      {requests.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground bg-background">
-          No adoption applications submitted yet.
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border bg-background">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="border-b bg-muted/50 text-muted-foreground font-medium">
-                <th className="p-4">Pet Image</th>
-                <th className="p-4">Pet Name</th>
-                <th className="p-4">Breed</th>
-                <th className="p-4">Adoption Fee</th>
-                <th className="p-4">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map((request) => (
-                <tr key={request._id} className="border-b hover:bg-muted/30 transition-colors">
-                  <td className="p-4">
-                    <img 
-                      src={request.imageUrl} 
-                      alt={request.petName} 
-                      className="w-12 h-12 object-cover rounded-lg border"
-                    />
-                  </td>
-                  <td className="p-4 font-semibold text-foreground capitalize">{request.petName}</td>
-                  <td className="p-4 text-muted-foreground capitalize">{request.breed}</td>
-                  <td className="p-4 text-foreground font-medium">{request.adoptionFee} BDT</td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      request.status === "Approved" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
-                      request.status === "Rejected" ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" :
-                      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                    }`}>
-                      {request.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AddPetView() {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Add a Pet for Adoption</h1>
-      <p className="text-sm text-muted-foreground">Fill out the form details below to list a new pet on the marketplace.</p>
-      <div className="rounded-lg border p-6 bg-background">
-        <AddPetsPage />
+      <div className="border rounded-xl bg-card p-6">
+        <h2 className="text-xl font-semibold mb-4">Account Summary</h2>
+        <p className="text-muted-foreground text-sm">
+          Welcome back, {session?.user?.name || "User"}! You currently have {stats.listings} active listings 
+          and {stats.requests} pending adoption requests.
+        </p>
       </div>
     </div>
   );
-}
-
-function MyListingsView() {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">My Pet Listings</h1>
-      <p className="text-sm text-muted-foreground">Manage and edit the active pet profiles you have listed.</p>
-      <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground bg-background">
-        You havent listed any pets for adoption yet.
-      </div>
-    </div>
-  );
-}
-
-export default function DashboardPage() {
-  const searchParams = useSearchParams();
-  const currentTab = searchParams.get("tab") || "my-requests";
-
-  switch (currentTab) {
-    case "my-requests":
-      return <MyRequestsView />;
-    case "add-pet":
-      return <AddPetView />;
-    case "my-listings":
-      return <MyListingsView />;
-    default:
-      return <MyRequestsView />;
-  }
 }

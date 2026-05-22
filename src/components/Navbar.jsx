@@ -1,62 +1,29 @@
 "use client";
 
-import { useState, useSyncExternalStore, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, PawPrint, LogOut, LayoutDashboard, User } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, PawPrint, User, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import { authClient } from "@/lib/auth-client"; 
+import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-
-  useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      setIsOpen(false);
-      setDropdownOpen(false);
-    });
-    return () => cancelAnimationFrame(frameId);
-  }, [pathname]);
-
-
+  const [profileOpen, setProfileOpen] = useState(false);
+  
   const { data: session, isPending } = authClient.useSession();
   const isLoggedIn = !!session?.user;
 
-
-  const [, forceUpdate] = useState({});
-  useEffect(() => {
-    const handleAuthChange = () => {
-      forceUpdate({});
-    };
-
-    window.addEventListener("auth-change", handleAuthChange);
-    return () => window.removeEventListener("auth-change", handleAuthChange);
-  }, []);
-
-
-  const isMounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
   const handleLogout = async () => {
-    await authClient.signOut();
-    setIsOpen(false);
-    setDropdownOpen(false);
-    toast.success("Logged out successfully.");
-    
-    window.dispatchEvent(new Event("auth-change"));
-    window.location.href = "/";
+    try {
+      await authClient.signOut();
+      toast.success("See you again!");
+      window.location.href = "/";
+    } catch (error) {
+      toast.error("Logout failed.");
+    }
   };
 
   const navLinks = [
@@ -65,173 +32,99 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-divider bg-background/70 backdrop-blur-md text-foreground">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           
-          {/* Brand/Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 text-foreground font-bold text-lg tracking-tight group">
-              <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground duration-300">
-                <PawPrint className="h-5 w-5" />
-              </div>
-              <span className="font-extrabold tracking-tight">
-                Pawsome<span className="text-primary font-medium">Adopt</span>
-              </span>
-            </Link>
-          </div>
-
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-1 relative h-full">
-            {navLinks.map((link, index) => {
-              const isActive = pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300 ${
-                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span className="relative z-10">{link.name}</span>
-                  
-                  {hoveredIndex === index && (
-                    <motion.span
-                      layoutId="navHoverBg"
-                      className="absolute inset-0 bg-muted/60 dark:bg-zinc-800/50 rounded-lg -z-0"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeLine"
-                      className="absolute bottom-[-18px] left-0 right-0 h-[2px] bg-primary"
-                      transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Desktop Auth & Theme Tools */}
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="p-1 rounded-lg bg-muted/40 border border-divider/50">
-              <ThemeSwitcher />
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight transition-transform hover:scale-[1.02]">
+            <div className="bg-primary/10 p-2 rounded-xl">
+              <PawPrint className="h-6 w-6 text-primary" />
             </div>
+            <span>Pawsome<span className="text-primary">Adopt</span></span>
+          </Link>
 
-            {isMounted && !isPending && (
-              <>
-                {isLoggedIn ? (
-                  <div className="relative py-2">
-                    <button 
-                      onClick={toggleDropdown}
-                      className="flex items-center focus:outline-none space-x-2 border border-transparent hover:border-divider p-1 rounded-xl transition-all"
-                    >
-                      <div className="h-9 w-9 rounded-xl bg-muted/60 border border-divider flex items-center justify-center text-foreground hover:border-primary/50 transition-all duration-300 overflow-hidden">
-                        {session?.user?.image ? (
-                          <img src={session.user.image} alt="Profile" className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="h-full w-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase">
-                            {session?.user?.name?.charAt(0) || <User className="h-4 w-4" />}
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-sm font-medium max-w-[100px] truncate">{session?.user?.name}</span>
-                    </button>
+          {/* Desktop Centered Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                href={link.path} 
+                className={`relative px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${pathname === link.path ? "text-primary" : "text-muted-foreground"}`}
+              >
+                {link.name}
+                {pathname === link.path && <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full" />}
+              </Link>
+            ))}
+          </div>
 
-                    <AnimatePresence>
-                      {dropdownOpen && (
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                          className="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-divider bg-background p-1.5 shadow-xl text-foreground z-50"
-                        >
-                          <Link href="/dashboard" className="flex w-full items-center px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors group/item">
-                            <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground group-hover/item:text-primary transition-colors" />
-                            Dashboard
-                          </Link>
-                          <div className="my-1 border-t border-divider" />
-                          <button onClick={handleLogout} className="flex w-full items-center px-3 py-2 text-sm rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Logout
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Link href="/login" className="px-4 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground transition-colors">Login</Link>
-                    <Link href="/signup" className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors">Sign Up</Link>
-                  </div>
-                )}
-              </>
+          {/* Desktop Right Section */}
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeSwitcher />
+            {!isPending && (
+              isLoggedIn ? (
+                <div className="relative">
+                  <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 px-4 py-2 rounded-full transition-all border border-border/50">
+                    <User className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium max-w-[80px] truncate">{session?.user?.name?.split(' ')[0] || "User"}</span>
+                    <ChevronDown className={`h-3 w-3 opacity-50 transition-transform ${profileOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {profileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-popover border border-border rounded-2xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                      <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 hover:bg-accent rounded-lg text-sm" onClick={() => setProfileOpen(false)}>
+                        <LayoutDashboard className="h-4 w-4" /> Dashboard
+                      </Link>
+                      <button onClick={handleLogout} className="flex w-full items-center gap-2 px-3 py-2 hover:bg-destructive/10 rounded-lg text-sm text-destructive">
+                        <LogOut className="h-4 w-4" /> Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link href="/login" className="text-sm font-medium hover:text-primary">Login</Link>
+                  <Link href="/signup" className="px-5 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-full shadow-lg hover:opacity-90">Sign Up</Link>
+                </div>
+              )
             )}
           </div>
 
-          {/* Mobile Collapse Button */}
-          <div className="flex md:hidden">
-            <button onClick={toggleMenu} className="inline-flex items-center justify-center p-2 rounded-lg text-foreground hover:bg-muted focus:outline-none transition-colors">
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
+          {/* Mobile Menu Trigger */}
+          <button className="md:hidden p-2 rounded-lg hover:bg-muted" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && isMounted && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-divider bg-background/95 backdrop-blur-md px-4 pt-2 pb-4 space-y-1 shadow-lg text-foreground overflow-hidden"
-          >
+      {/* Mobile Menu Panel */}
+      {isOpen && (
+        <div className="md:hidden border-t bg-background p-4 animate-in slide-in-from-top-4 duration-200">
+          <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
-              <Link key={link.path} href={link.path} className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all ${pathname === link.path ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
+              <Link key={link.path} href={link.path} className="block px-4 py-2 font-medium hover:bg-muted rounded-lg" onClick={() => setIsOpen(false)}>
                 {link.name}
               </Link>
             ))}
-            
-            {isLoggedIn ? (
-              <>
-                <Link href="/add-pets" className="block px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition-all">Add Pet</Link>
-                <hr className="my-2 border-divider" />
-                <Link href="/dashboard" className="flex items-center px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition-all">
-                  <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" /> Dashboard
-                </Link>
-                <div className="flex items-center justify-between px-4 py-2 rounded-lg bg-muted/50 my-1">
-                  <span className="text-sm font-medium text-muted-foreground">Appearance</span>
-                  <ThemeSwitcher />
+            <hr className="border-border" />
+            {!isPending && (
+              isLoggedIn ? (
+                <>
+                  <Link href="/dashboard" className="px-4 py-2 font-medium hover:bg-muted rounded-lg" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                  <button onClick={handleLogout} className="text-left px-4 py-2 text-destructive font-medium hover:bg-destructive/10 rounded-lg">Logout</button>
+                </>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link href="/login" className="px-4 py-2 text-center font-medium border rounded-lg">Login</Link>
+                  <Link href="/signup" className="px-4 py-2 text-center font-medium bg-primary text-primary-foreground rounded-lg">Sign Up</Link>
                 </div>
-                <button onClick={handleLogout} className="flex w-full items-center px-4 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
-                </button>
-              </>
-            ) : (
-              <div className="pt-2 space-y-2">
-                <div className="flex items-center justify-between px-4 py-2 rounded-lg bg-muted/50">
-                  <span className="text-sm font-medium text-muted-foreground">Appearance</span>
-                  <ThemeSwitcher />
-                </div>
-                <div className="grid grid-cols-2 gap-2 pt-2">
-                  <Link href="/login" className="flex w-full items-center justify-center rounded-lg border border-divider px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-all">Login</Link>
-                  <Link href="/signup" className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow">Sign Up</Link>
-                </div>
-              </div>
+              )
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="px-4 mt-2">
+              <ThemeSwitcher />
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

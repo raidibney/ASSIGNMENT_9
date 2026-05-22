@@ -1,110 +1,41 @@
-"use client";
-
-import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { ClipboardList, PlusCircle, FolderHeart, User } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Heart, List } from "lucide-react";
 
-// 1. The main layout wrapper with a Suspense Boundary
 export default function DashboardLayout({ children }) {
-  return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-muted/30">
-        <p className="text-sm text-muted-foreground animate-pulse">Loading dashboard elements...</p>
-      </div>
-    }>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </Suspense>
-  );
-}
-
-
-function DashboardLayoutContent({ children }) {
-  const searchParams = useSearchParams();
-  const currentTab = searchParams.get("tab") || "my-requests"; 
-
   const sidebarLinks = [
-    {
-      name: "My Requests",
-      href: "/dashboard?tab=my-requests",
-      id: "my-requests",
-      icon: ClipboardList,
-    },
-    {
-      name: "Add Pet",
-      href: "/dashboard?tab=add-pet",
-      id: "add-pet",
-      icon: PlusCircle,
-    },
-    {
-      name: "My Listings",
-      href: "/dashboard?tab=my-listings",
-      id: "my-listings",
-      icon: FolderHeart,
-    },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Add Pet", path: "/dashboard/add-pet", icon: PlusCircle },
+    { name: "My Listings", path: "/dashboard/my-listings", icon: List },
+    { name: "My Requests", path: "/dashboard/my-requests", icon: Heart },
   ];
 
   return (
-    <div className="flex min-h-screen bg-muted/30">
-      {/* Sidebar Navigation (Desktop) */}
-      <aside className="hidden md:flex w-64 flex-col border-r bg-background p-4 space-y-6">
-        <div className="flex items-center space-x-2 px-2 py-4 border-b">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
-            <User className="h-4 w-4" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">User Dashboard</h2>
-            <p className="text-xs text-muted-foreground">Manage your pets</p>
-          </div>
+    <div className="flex min-h-screen bg-background text-foreground">
+      {/* Sidebar - Fixed width */}
+      <aside className="w-64 border-r border-divider p-6 hidden md:block">
+        <div className="mb-8">
+          <h2 className="text-xl font-bold tracking-tight">PetNest</h2>
         </div>
-
-        <nav className="flex-1 space-y-1">
-          {sidebarLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = currentTab === link.id;
-
-            return (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{link.name}</span>
-              </Link>
-            );
-          })}
+        
+        <nav className="space-y-2">
+          {sidebarLinks.map((link) => (
+            <Link
+              key={link.path}
+              href={link.path}
+              className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-muted transition-colors text-sm font-medium"
+            >
+              <link.icon className="h-5 w-5" />
+              <span>{link.name}</span>
+            </Link>
+          ))}
         </nav>
       </aside>
 
-      {/* Main Content Container */}
-      <main className="flex-1 p-6 md:p-8">
-        {/* Mobile Navigation Row */}
-        <div className="flex md:hidden border-b bg-background p-2 mb-6 -mx-6 -mt-6 items-center justify-around text-xs">
-          {sidebarLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = currentTab === link.id;
-
-            return (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-md transition-colors ${
-                  isActive ? "text-primary font-semibold" : "text-muted-foreground"
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{link.name}</span>
-              </Link>
-            );
-          })}
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto bg-muted/20">
+        <div className="p-8">
+          {children}
         </div>
-
-        <div className="max-w-5xl mx-auto">{children}</div>
       </main>
     </div>
   );
