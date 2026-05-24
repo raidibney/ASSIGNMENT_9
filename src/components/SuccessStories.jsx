@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  Sparkles,
+} from "lucide-react";
 
 export default function SuccessStories() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -10,177 +16,259 @@ export default function SuccessStories() {
   const stories = [
     {
       name: "Bella & The Ahmed Family",
-      image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=700",
-      quote: "Bella was timid when we brought her home, but within a week she became our home's joyful alarm clock. We can't imagine life without her!",
-      tag: "Adopted 6 Months Ago",
+      image:
+        "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=1200",
+      quote:
+        "Bella was timid when we brought her home, but within a week she became our home's joyful alarm clock.",
+      role: "Verified Adoption Story",
+      adopted: "6 Months Ago",
     },
     {
       name: "Milo & Tanvir",
-      image: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&q=80&w=700",
-      quote: "Finding Milo on PawsomeAdopt was seamless. He brings so much positive energy into my workspace while I'm programming. True companionship.",
-      tag: "Adopted 1 Year Ago",
-    }
+      image:
+        "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&q=80&w=1200",
+      quote:
+        "Finding Milo on PawsomeAdopt was seamless. He brings positive energy into my workspace every single day.",
+      role: "Verified Adoption Story",
+      adopted: "1 Year Ago",
+    },
+    {
+      name: "Luna & Sarah",
+      image:
+        "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&q=80&w=1200",
+      quote:
+        "The adoption process felt premium from start to finish. Luna instantly became part of our family.",
+      role: "Verified Adoption Story",
+      adopted: "4 Months Ago",
+    },
   ];
 
-  const handleNext = () => {
+  const nextSlide = () => {
     setActiveIndex((prev) => (prev + 1) % stories.length);
   };
 
-  const handlePrev = () => {
+  const prevSlide = () => {
     setActiveIndex((prev) => (prev - 1 + stories.length) % stories.length);
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 7000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative py-24 bg-zinc-950 text-white overflow-hidden select-none">
-     
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
-      
-      
-      <div className="absolute top-0 left-1/4 w-[500px] h-[350px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[450px] h-[350px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+    <section className="relative overflow-hidden bg-background py-28 transition-colors duration-500">
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* GRID */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(120,120,120,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(120,120,120,0.05)_1px,transparent_1px)] bg-[size:44px_44px]" />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-       
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-serif font-medium tracking-tight text-white">
-            Success Stories
-          </h2>
-        </div>
+        {/* BLOBS */}
+        <div className="absolute top-[-10%] left-[-10%] h-[420px] w-[420px] rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-500/20" />
 
-  
-        <div className="relative flex items-center justify-center min-h-[480px] w-full">
-          
-         
-          <div className="hidden lg:block absolute left-[-20%] xl:left-[-15%] w-[30%] opacity-20 scale-90 pointer-events-none transition-all duration-500">
-            <SideCardPeek story={stories[(activeIndex - 1 + stories.length) % stories.length]} />
+        <div className="absolute bottom-[-10%] right-[-10%] h-[420px] w-[420px] rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-500/20" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* TOP */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-20">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 backdrop-blur-xl px-4 py-2">
+              <Sparkles className="h-4 w-4 text-indigo-500" />
+
+              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">
+                Community Stories
+              </span>
+            </div>
+
+            <h2 className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] text-foreground">
+              Real Stories. <br />
+
+              <span className="bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-500 bg-clip-text text-transparent">
+                Real Connections.
+              </span>
+            </h2>
+
+            <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-muted-foreground">
+              Every adoption creates a lifelong bond. Explore inspiring stories
+              from families who found their perfect companion.
+            </p>
           </div>
 
-          <button
-            onClick={handlePrev}
-            className="absolute left-4 md:left-8 z-30 h-14 w-14 rounded-2xl bg-zinc-900/60 backdrop-blur-xl border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800/80 hover:border-white/20 transition-all shadow-2xl active:scale-95"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
+          {/* CONTROLS */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={prevSlide}
+              className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-background/70 text-foreground backdrop-blur-xl transition-all duration-300 hover:scale-105"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
 
-         
-          <div className="w-full max-w-4xl z-20 px-4 md:px-0">
+            <button
+              onClick={nextSlide}
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-background transition-all duration-300 hover:scale-105"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* MAIN SECTION */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* LEFT STACKED IMAGES */}
+          <div className="lg:col-span-5 relative h-[450px] hidden lg:flex items-center justify-center">
+            {stories.map((story, index) => {
+              const isActive = index === activeIndex;
+
+              let position = index - activeIndex;
+
+              if (position < 0) {
+                position += stories.length;
+              }
+
+              return (
+                <motion.div
+                  key={index}
+                  animate={{
+                    scale: isActive ? 1 : 0.88,
+                    rotate: isActive ? 0 : position === 1 ? 8 : -8,
+                    x: isActive ? 0 : position === 1 ? 110 : -110,
+                    y: isActive ? 0 : 30,
+                    opacity: isActive ? 1 : 0.35,
+                    zIndex: isActive ? 30 : 10,
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    type: "spring",
+                    stiffness: 180,
+                    damping: 20,
+                  }}
+                  className="absolute"
+                >
+                  <div className="rounded-[34px] border border-border bg-background/60 p-3 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.12)]">
+                    <div className="relative overflow-hidden rounded-[26px] w-[290px] h-[360px]">
+                      <img
+                        src={story.image}
+                        alt={story.name}
+                        className="h-full w-full object-cover"
+                        draggable="false"
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-indigo-300">
+                          {story.adopted}
+                        </p>
+
+                        <h3 className="text-2xl font-black text-white leading-tight">
+                          {story.name}
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* RIGHT CONTENT */}
+          <div className="lg:col-span-7">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeIndex}
-                initial={{ opacity: 0, scale: 0.96, x: 20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.96, x: -20 }}
-                transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                className="w-full grid grid-cols-1 md:grid-cols-12 bg-zinc-900/80 backdrop-blur-2xl border border-indigo-500/20 rounded-[32px] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.8)]"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.5 }}
+                className="relative overflow-hidden rounded-[40px] border border-border bg-background/70 p-8 sm:p-10 lg:p-14 backdrop-blur-2xl"
               >
-               
-                <div className="md:col-span-6 h-72 md:h-[440px] relative overflow-hidden">
-                  <img
-                    src={stories[activeIndex].image}
-                    alt={stories[activeIndex].name}
-                    className="w-full h-full object-cover select-none"
-                    draggable="false"
-                  />
-                  
-                
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
-                  
-                  <span className="absolute top-4 left-4 rounded-full bg-zinc-900/80 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[10px] font-bold tracking-widest text-zinc-300 uppercase">
-                    {stories[activeIndex].tag}
-                  </span>
+                {/* FLOATING QUOTE */}
+                <Quote className="absolute top-8 right-8 h-32 w-32 text-muted/40 dark:text-white/[0.04]" />
 
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 block mb-1">
-                      Featured Entry
-                    </span>
-                    <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white font-serif">
-                      {stories[activeIndex].name}
-                    </h3>
+                {/* MOBILE IMAGE */}
+                <div className="lg:hidden mb-8">
+                  <div className="overflow-hidden rounded-[28px] h-[260px]">
+                    <img
+                      src={stories[activeIndex].image}
+                      alt={stories[activeIndex].name}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                 </div>
 
-              
-                <div className="md:col-span-6 p-8 md:p-12 flex flex-col justify-center relative bg-gradient-to-br from-transparent to-zinc-950/40">
-                
-                  <Quote className="absolute right-6 bottom-4 h-36 w-36 text-zinc-800/10 -z-0 pointer-events-none" />
+                <div className="relative z-10">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-indigo-500">
+                    {stories[activeIndex].role}
+                  </span>
 
-                  <div className="relative z-10 space-y-6">
-                    <p className="text-base md:text-lg text-zinc-300 font-serif leading-relaxed italic font-light">
-                      {`"${stories[activeIndex].quote}"`}
-                    </p>
+                  <h3 className="mt-8 text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-foreground">
+                    {stories[activeIndex].name}
+                  </h3>
 
-                    <div className="flex items-center space-x-3 pt-4 border-t border-zinc-800">
-                      <div className="h-7 w-7 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-400">
-                        ID
+                  <p className="mt-8 max-w-3xl text-xl sm:text-2xl font-medium leading-relaxed text-muted-foreground">
+                    “{stories[activeIndex].quote}”
+                  </p>
+
+                  {/* FOOTER */}
+                  <div className="mt-12 flex flex-col gap-6 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 text-lg font-black text-white shadow-lg">
+                        {stories[activeIndex].name.charAt(0)}
                       </div>
+
                       <div>
-                        <p className="text-xs font-black tracking-widest uppercase text-zinc-400">Adoptive Partner</p>
-                        <p className="text-sm font-bold text-zinc-200 mt-0.5">{stories[activeIndex].name.split("&")[1] || "Verified Host"}</p>
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          Happy Adoption
+                        </p>
+
+                        <h4 className="mt-1 text-lg font-bold text-foreground">
+                          Verified Family
+                        </h4>
                       </div>
                     </div>
+
+                    <button className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-foreground px-6 py-4 text-sm font-bold text-background transition-all duration-300 hover:scale-[1.03]">
+                      Read Full Story
+
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
             </AnimatePresence>
+
+            {/* INDICATORS */}
+            <div className="mt-10 flex items-center gap-3">
+              {stories.map((_, idx) => {
+                const isActive = idx === activeIndex;
+
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveIndex(idx)}
+                    className={`relative overflow-hidden rounded-full transition-all duration-500 ${
+                      isActive
+                        ? "h-3 w-20"
+                        : "h-3 w-3 bg-muted"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="indicator"
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-amber-500"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-
-     
-          <button
-            onClick={handleNext}
-            className="absolute right-4 md:right-8 z-30 h-14 w-14 rounded-2xl bg-zinc-900/60 backdrop-blur-xl border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800/80 hover:border-white/20 transition-all shadow-2xl active:scale-95"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-
-         
-          <div className="hidden lg:block absolute right-[-20%] xl:right-[-15%] w-[30%] opacity-20 scale-90 pointer-events-none transition-all duration-500">
-            <SideCardPeek story={stories[(activeIndex + 1) % stories.length]} />
-          </div>
-
         </div>
-
-     
-        <div className="flex justify-center items-center space-x-3 mt-12">
-          {stories.map((_, idx) => {
-            const isActive = activeIndex === idx;
-            return (
-              <button
-                key={idx}
-                onClick={() => setActiveIndex(idx)}
-                className="h-1 rounded-full overflow-hidden transition-all duration-500 relative"
-                style={{ width: isActive ? "80px" : "16px" }}
-              >
-                <div className={`absolute inset-0 rounded-full ${isActive ? "bg-indigo-500" : "bg-zinc-800"}`} />
-                {isActive && (
-                  <motion.div 
-                    initial={{ x: "-100%" }}
-                    animate={{ x: "0%" }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-500"
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
       </div>
     </section>
-  );
-}
-
-
-function SideCardPeek({ story }) {
-  return (
-    <div className="w-full bg-zinc-900 border border-white/5 rounded-[24px] overflow-hidden p-3 space-y-4">
-      <div className="h-48 w-full rounded-[16px] overflow-hidden">
-        <img src={story.image} alt="" className="w-full h-full object-cover grayscale opacity-50" />
-      </div>
-      <div className="space-y-1 px-2 pb-2">
-        <div className="h-3 w-1/3 bg-zinc-800 rounded" />
-        <div className="h-4 w-2/3 bg-zinc-800 rounded" />
-      </div>
-    </div>
   );
 }
