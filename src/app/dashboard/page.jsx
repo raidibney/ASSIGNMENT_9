@@ -40,11 +40,19 @@ export default function DashboardPage() {
         const requestsData = await requestsRes.json();
 
         // Calculate stats
-        setStats({
-          listings: listingsData.length || 0,
-          requests: requestsData.filter(req => req.status === "Pending").length || 0,
-          adoptions: requestsData.filter(req => req.status === "Accepted").length || 0,
-        });
+       setStats({
+  listings: listingsData.length || 0,
+
+  requests:
+    requestsData.filter(
+      (req) => req.status?.toLowerCase() === "pending"
+    ).length || 0,
+
+  adoptions:
+    requestsData.filter(
+      (req) => req.status?.toLowerCase() === "accepted"
+    ).length || 0,
+});
       } catch (err) {
         toast.error("Failed to load dashboard data.");
       } finally {
