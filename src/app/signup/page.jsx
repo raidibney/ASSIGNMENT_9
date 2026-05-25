@@ -3,37 +3,47 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import toast from "react-hot-toast"; // Added import
-import { useRouter } from "next/navigation"; // Added import
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Password validation with Toast
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
-    // Call the signup method
     const { data, error: authError } = await authClient.signUp.email({
       email,
       password,
       name,
+      image,
     });
 
     if (authError) {
-      // If there is an error, show it to the user
-      setError(authError.message || "An error occurred during sign up.");
+      const errorMessage = authError.message || "An error occurred during sign up.";
+      toast.error(errorMessage);
+      setError(errorMessage);
       setLoading(false);
     } else {
-      // On success, show toast and redirect
       toast.success("Account created successfully!");
-      router.push("/"); 
+      router.push("/");
     }
   };
 
@@ -65,6 +75,17 @@ export default function SignUp() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium mb-1">Profile Image URL</label>
+            <input
+              type="url"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-divider bg-background focus:outline-none focus:border-primary transition-colors text-sm"
+              placeholder="https://example.com/avatar.jpg"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium mb-1">Email Address</label>
             <input
               type="email"
@@ -83,6 +104,18 @@ export default function SignUp() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-divider bg-background focus:outline-none focus:border-primary transition-colors text-sm"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Confirm Password</label>
+            <input
+              type="password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border border-divider bg-background focus:outline-none focus:border-primary transition-colors text-sm"
               placeholder="••••••••"
             />

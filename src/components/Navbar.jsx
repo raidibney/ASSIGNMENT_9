@@ -64,8 +64,12 @@ export default function Navbar() {
             {!isPending && (
               isLoggedIn ? (
                 <div className="relative">
-                  <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 px-4 py-2 rounded-full transition-all border border-border/50">
-                    <User className="h-4 w-4 text-primary" />
+                  <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 bg-muted/40 hover:bg-muted/70 px-3 py-1.5 rounded-full transition-all border border-border/50">
+                    {session?.user?.image ? (
+                      <img src={session.user.image} alt="Profile" className="h-6 w-6 rounded-full object-cover" />
+                    ) : (
+                      <User className="h-4 w-4 text-primary" />
+                    )}
                     <span className="text-sm font-medium max-w-[80px] truncate">{session?.user?.name?.split(' ')[0] || "User"}</span>
                     <ChevronDown className={`h-3 w-3 opacity-50 transition-transform ${profileOpen ? "rotate-180" : ""}`} />
                   </button>
@@ -109,6 +113,16 @@ export default function Navbar() {
             {!isPending && (
               isLoggedIn ? (
                 <>
+                  <div className="px-4 py-2 flex items-center gap-3">
+                    {session?.user?.image ? (
+                      <img src={session.user.image} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                    )}
+                    <span className="font-semibold">{session?.user?.name}</span>
+                  </div>
                   <Link href="/dashboard" className="px-4 py-2 font-medium hover:bg-muted rounded-lg" onClick={() => setIsOpen(false)}>Dashboard</Link>
                   <button onClick={handleLogout} className="text-left px-4 py-2 text-destructive font-medium hover:bg-destructive/10 rounded-lg">Logout</button>
                 </>

@@ -22,11 +22,24 @@ const Detailspage = ({ params }) => {
     const [pickupDate, setPickupDate] = useState("");
     const [message, setMessage] = useState("");
 
-    const { data: session } = authClient.useSession();
+    // --- MODIFIED: Added isPending to track session status ---
+    const { data: session, isPending } = authClient.useSession();
     
+    // --- MODIFIED: Authentication Guard Logic ---
+    useEffect(() => {
+        if (!isPending && !session) {
+            toast.error("Please login to view pet details.");
+            router.push("/login");
+        }
+    }, [session, isPending, router]);
+    // -------------------------------------------
+
     const isOwner = session?.user?.email && petDetails?.ownerEmail === session.user.email;
 
     useEffect(() => {
+        // --- MODIFIED: Ensure we only fetch if session is confirmed ---
+        if (isPending || !session) return; 
+        
         if (!id || id === "undefined" || !process.env.NEXT_PUBLIC_SERVER_URL) return;
 
         const fetchPetDetails = async () => {
@@ -45,16 +58,11 @@ const Detailspage = ({ params }) => {
             }
         };
         fetchPetDetails();
-    }, [id]);
+    }, [id, session, isPending]); // Dependency array updated
 
     const handleAdoptPet = async (e) => {
         e.preventDefault();
-        if (!session?.user) {
-            toast.error("Please login first to adopt this pet.");
-            router.push("/login");
-            return;
-        }
-
+        // Since we gated the page, we can assume session exists here
         setSubmittingRequest(true);
         const requestPayload = {
             petId: petDetails._id || petDetails.id,
@@ -88,7 +96,8 @@ const Detailspage = ({ params }) => {
         }
     };
 
-    if (loading) return <div className="p-20 text-center text-default-500">Loading...</div>;
+    // --- MODIFIED: Updated loading state to include Auth check ---
+    if (isPending || loading) return <div className="p-20 text-center text-default-500">Loading...</div>;
     if (error || !petDetails) return <div className="p-20 text-center text-danger">Error loading pet details.</div>;
 
     return (
