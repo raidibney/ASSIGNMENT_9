@@ -15,12 +15,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Wait for auth check to finish
     if (isPending) return;
 
-    // 2. Define the async function inside the effect
     const fetchDashboardData = async () => {
-      // 3. Move the logic inside to avoid top-level state updates
       if (!session?.user?.email) {
         setLoading(false);
         return;
@@ -30,7 +27,6 @@ export default function DashboardPage() {
         setLoading(true);
         const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
 
-        // Fetch both sets of data
         const [listingsRes, requestsRes] = await Promise.all([
           fetch(`${baseUrl}/my-pets/${session.user.email}`),
           fetch(`${baseUrl}/adoption-requests?email=${session.user.email}`)
@@ -39,20 +35,11 @@ export default function DashboardPage() {
         const listingsData = await listingsRes.json();
         const requestsData = await requestsRes.json();
 
-        // Calculate stats
-       setStats({
-  listings: listingsData.length || 0,
-
-  requests:
-    requestsData.filter(
-      (req) => req.status?.toLowerCase() === "pending"
-    ).length || 0,
-
-  adoptions:
-    requestsData.filter(
-      (req) => req.status?.toLowerCase() === "accepted"
-    ).length || 0,
-});
+        setStats({
+          listings: listingsData.length || 0,
+          requests: requestsData.filter((req) => req.status?.toLowerCase() === "pending").length || 0,
+          adoptions: requestsData.filter((req) => req.status?.toLowerCase() === "accepted").length || 0,
+        });
       } catch (err) {
         toast.error("Failed to load dashboard data.");
       } finally {
@@ -63,36 +50,46 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [session, isPending]);
 
-  if (isPending || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+  if (isPending || loading) return <div className="flex min-h-screen items-center justify-center">Loading your dashboard...</div>;
 
   const statItems = [
-    { name: "Active Listings", value: stats.listings, icon: PawPrint, color: "text-blue-500" },
-    { name: "Pending Requests", value: stats.requests, icon: Clock, color: "text-yellow-500" },
-    { name: "Total Adoptions", value: stats.adoptions, icon: Heart, color: "text-red-500" },
+    { name: "Active Listings", value: stats.listings, icon: PawPrint, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { name: "Pending Requests", value: stats.requests, icon: Clock, color: "text-yellow-500", bg: "bg-yellow-500/10" },
+    { name: "Total Adoptions", value: stats.adoptions, icon: Heart, color: "text-red-500", bg: "bg-red-500/10" },
   ];
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+    <div className="relative min-h-screen p-6 md:p-10 bg-background overflow-hidden">
+      {/* Decorative background blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/10 rounded-full blur-[128px]" />
+      
+      <header className="mb-10">
+        <h1 className="text-4xl font-black tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back, {session?.user?.name || "User"}!</p>
+      </header>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {statItems.map((stat) => (
-          <div key={stat.name} className="p-6 rounded-xl border bg-card shadow-sm">
+          <div key={stat.name} className="relative p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg transition-transform hover:scale-[1.02]">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-muted-foreground text-sm font-medium">{stat.name}</span>
-              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              <span className="text-muted-foreground text-sm font-semibold uppercase tracking-wider">{stat.name}</span>
+              <div className={`p-2 rounded-lg ${stat.bg}`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </div>
             </div>
-            <div className="text-3xl font-bold">{stat.value}</div>
+            <div className="text-4xl font-black">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="border rounded-xl bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Account Summary</h2>
-        <p className="text-muted-foreground text-sm">
-          Welcome back, {session?.user?.name || "User"}! You currently have {stats.listings} active listings 
-          and {stats.requests} pending adoption requests.
+      {/* Summary Card */}
+      <div className="border border-white/10 rounded-3xl bg-white/5 backdrop-blur-xl p-8 shadow-xl">
+        <h2 className="text-2xl font-bold mb-3">Account Summary</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          You currently have <strong>{stats.listings} active listings</strong> 
+          {" "}and <strong>{stats.requests} pending adoption requests</strong>. 
+          Stay on top of your pet adoptions through your personalized dashboard.
         </p>
       </div>
     </div>

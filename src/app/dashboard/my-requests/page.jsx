@@ -10,12 +10,9 @@ export default function MyRequestsPage() {
   const { data: session, isPending } = authClient.useSession();
 
   useEffect(() => {
-    // 1. Wait for auth session to be ready
     if (isPending) return;
 
-    // 2. Define the data fetching logic inside the effect
     const fetchRequests = async () => {
-      // If no user is logged in, we set loading to false and stop
       if (!session?.user?.email) {
         setLoading(false);
         return;
@@ -39,10 +36,8 @@ export default function MyRequestsPage() {
     fetchRequests();
   }, [session, isPending]);
 
-  // Loading state
   if (isPending || loading) return <div className="p-20 text-center">Loading your requests...</div>;
 
-  // Unauthenticated state
   if (!session?.user?.email) {
     return (
       <div className="p-20 text-center">
@@ -51,35 +46,43 @@ export default function MyRequestsPage() {
     );
   }
 
-  // Render the table
   return (
     <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">My Adoption Requests</h1>
+      <header className="mb-8">
+        <h1 className="text-3xl font-black tracking-tight">My Adoption Requests</h1>
+        <p className="text-muted-foreground mt-1">Track the status of your adoption applications.</p>
+      </header>
 
       {requests.length === 0 ? (
-        <p className="text-gray-500">You havent requested to adopt any pets yet.</p>
+        <div className="text-center py-20 border border-dashed rounded-3xl bg-white/5">
+          <p className="text-muted-foreground">You have not requested to adopt any pets yet.</p>
+        </div>
       ) : (
-        <div className="border rounded-xl overflow-hidden bg-card shadow-sm">
+        <div className="border border-white/10 rounded-3xl overflow-hidden bg-white/5 backdrop-blur-xl shadow-2xl">
           <table className="w-full text-left text-sm">
-            <thead className="bg-muted/50 border-b">
+            <thead className="bg-white/5 border-b border-white/10">
               <tr>
-                <th className="p-4 font-semibold">Pet Name</th>
-                <th className="p-4 font-semibold">Date Requested</th>
-                <th className="p-4 font-semibold">Status</th>
+                <th className="p-5 font-bold uppercase text-xs text-muted-foreground">Pet Name</th>
+                <th className="p-5 font-bold uppercase text-xs text-muted-foreground">Date Requested</th>
+                <th className="p-5 font-bold uppercase text-xs text-muted-foreground">Pickup Date</th>
+                <th className="p-5 font-bold uppercase text-xs text-muted-foreground">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-white/10">
               {requests.map((req) => (
-                <tr key={req._id} className="hover:bg-muted/30">
-                  <td className="p-4 font-medium">{req.petName}</td>
-                  <td className="p-4 text-gray-600">
+                <tr key={req._id} className="hover:bg-white/5 transition-colors">
+                  <td className="p-5 font-bold text-foreground">{req.petName}</td>
+                  <td className="p-5 text-muted-foreground">
                     {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'N/A'}
                   </td>
-                  <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      req.status === 'Accepted' 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-yellow-100 text-yellow-700'
+                  <td className="p-5 font-medium text-foreground">
+                    {req.pickupDate || 'Not set'}
+                  </td>
+                  <td className="p-5">
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase ${
+                      req.status?.toLowerCase() === 'accepted' 
+                        ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
+                        : 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
                     }`}>
                       {req.status}
                     </span>

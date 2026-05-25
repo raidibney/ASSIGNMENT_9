@@ -2,3 +2,4 @@
 @import "@heroui/styles"; 
 /* Add this directive right below your Tailwind imports */
 @variant dark (&:where(.dark, .dark *));
+

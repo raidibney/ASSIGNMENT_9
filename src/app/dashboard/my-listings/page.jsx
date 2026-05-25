@@ -302,13 +302,13 @@ export default function MyListingsPage() {
                     {/* BUTTONS */}
                     <div className="grid grid-cols-2 gap-3">
                       {/* VIEW */}
-                      <Link
-                        href={`/add-pets/${pet._id}`}
-                        className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background py-3 text-sm font-bold hover:bg-muted transition-all"
-                      >
-                        <Eye className="h-4 w-4" />
-                        View
-                      </Link>
+                     <Link
+ href={`/all-pets/${pet._id}`}
+  className="flex items-center justify-center gap-2 rounded-xl border border-border bg-background py-3 text-sm font-bold hover:bg-muted transition-all"
+>
+  <Eye className="h-4 w-4" />
+  View
+</Link>
 
                       {/* EDIT */}
                       <button

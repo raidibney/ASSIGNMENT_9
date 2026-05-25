@@ -22,24 +22,12 @@ const Detailspage = ({ params }) => {
     const [pickupDate, setPickupDate] = useState("");
     const [message, setMessage] = useState("");
 
-    // --- MODIFIED: Added isPending to track session status ---
-    const { data: session, isPending } = authClient.useSession();
+    // Session is still fetched to determine if user is the owner
+    const { data: session } = authClient.useSession();
     
-    // --- MODIFIED: Authentication Guard Logic ---
-    useEffect(() => {
-        if (!isPending && !session) {
-            toast.error("Please login to view pet details.");
-            router.push("/login");
-        }
-    }, [session, isPending, router]);
-    // -------------------------------------------
-
     const isOwner = session?.user?.email && petDetails?.ownerEmail === session.user.email;
 
     useEffect(() => {
-        // --- MODIFIED: Ensure we only fetch if session is confirmed ---
-        if (isPending || !session) return; 
-        
         if (!id || id === "undefined" || !process.env.NEXT_PUBLIC_SERVER_URL) return;
 
         const fetchPetDetails = async () => {
@@ -58,11 +46,18 @@ const Detailspage = ({ params }) => {
             }
         };
         fetchPetDetails();
-    }, [id, session, isPending]); // Dependency array updated
+    }, [id]);
 
     const handleAdoptPet = async (e) => {
         e.preventDefault();
-        // Since we gated the page, we can assume session exists here
+        
+        // Added check to ensure user is logged in before allowing adoption
+        if (!session) {
+            toast.error("Please login to request adoption.");
+            router.push("/login");
+            return;
+        }
+
         setSubmittingRequest(true);
         const requestPayload = {
             petId: petDetails._id || petDetails.id,
@@ -96,8 +91,7 @@ const Detailspage = ({ params }) => {
         }
     };
 
-    // --- MODIFIED: Updated loading state to include Auth check ---
-    if (isPending || loading) return <div className="p-20 text-center text-default-500">Loading...</div>;
+    if (loading) return <div className="p-20 text-center text-default-500">Loading...</div>;
     if (error || !petDetails) return <div className="p-20 text-center text-danger">Error loading pet details.</div>;
 
     return (
@@ -142,8 +136,8 @@ const Detailspage = ({ params }) => {
                             <h2 className="text-2xl font-bold mb-6 text-foreground">Request to Adopt {petDetails.petName}</h2>
                             <form onSubmit={handleAdoptPet} className="space-y-4">
                                 <div><label className="text-xs font-bold uppercase text-default-400">Pet Name</label><input disabled value={petDetails.petName} className="w-full bg-default-100 p-3 rounded-lg border border-default-200 text-foreground" /></div>
-                                <div><label className="text-xs font-bold uppercase text-default-400">Your Name</label><input disabled value={session?.user?.name || ""} className="w-full bg-default-100 p-3 rounded-lg border border-default-200 text-foreground" /></div>
-                                <div><label className="text-xs font-bold uppercase text-default-400">Your Email</label><input disabled value={session?.user?.email || ""} className="w-full bg-default-100 p-3 rounded-lg border border-default-200 text-foreground" /></div>
+                                <div><label className="text-xs font-bold uppercase text-default-400">Your Name</label><input disabled value={session?.user?.name || "Not logged in"} className="w-full bg-default-100 p-3 rounded-lg border border-default-200 text-foreground" /></div>
+                                <div><label className="text-xs font-bold uppercase text-default-400">Your Email</label><input disabled value={session?.user?.email || "Not logged in"} className="w-full bg-default-100 p-3 rounded-lg border border-default-200 text-foreground" /></div>
                                 <div><label className="text-xs font-bold uppercase text-default-400">Preferred Pickup Date</label><input type="date" required onChange={(e) => setPickupDate(e.target.value)} className="w-full p-3 rounded-lg border border-default-200 bg-transparent text-foreground" /></div>
                                 <div><label className="text-xs font-bold uppercase text-default-400">Message to Owner</label><textarea required onChange={(e) => setMessage(e.target.value)} placeholder="Tell the owner why you'd be a great match..." className="w-full p-3 rounded-lg border border-default-200 bg-transparent text-foreground h-24" /></div>
                                 <button type="submit" disabled={submittingRequest} className="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 disabled:opacity-50">
