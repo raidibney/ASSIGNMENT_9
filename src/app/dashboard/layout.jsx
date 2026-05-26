@@ -34,6 +34,21 @@ export default function DashboardLayout({ children }) {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto bg-muted/20">
         <div className="p-8">
+          
+          {/* Mobile Dashboard Menu Tabs (Only visible on small devices) */}
+          <div className="md:hidden flex items-center space-x-2 overflow-x-auto pb-4 mb-6 border-b border-divider">
+            {sidebarLinks.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-background border border-divider hover:bg-muted transition-colors text-xs font-medium whitespace-nowrap"
+              >
+                <link.icon className="h-4 w-4" />
+                <span>{link.name}</span>
+              </Link>
+            ))}
+          </div>
+
           {children}
         </div>
       </main>
