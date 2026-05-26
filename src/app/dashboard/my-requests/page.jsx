@@ -20,7 +20,7 @@ export default function MyRequestsPage() {
 
       try {
         setLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000"}/adoption-requests?email=${session.user.email}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/adoption-requests?email=${session.user.email}`);
         
         if (!res.ok) throw new Error("Failed to fetch requests");
         

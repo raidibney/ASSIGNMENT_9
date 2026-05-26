@@ -1,4 +1,4 @@
-const { betterAuth } = require("better-auth");
+const { betterAuth, jwt } = require("better-auth");
 const { mongodbAdapter } = require("better-auth/adapters/mongodb");
 const { MongoClient } = require("mongodb");
 
@@ -17,6 +17,14 @@ const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET
         }
     },
+    session: {
+        cookieCache:{
+            enabled: true,
+            strategy: "jwt",
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+        }
+    },
+   
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL: process.env.BETTER_AUTH_URL 
 });

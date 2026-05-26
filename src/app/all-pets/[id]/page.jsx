@@ -7,7 +7,10 @@ import DeleteAlert from "@/components/DeleteAlert";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-const Detailspage = ({ params }) => {
+
+const Detailspage =  ({ params }) => {
+
+  
     const resolvedParams = use(params);
     const id = resolvedParams?.id;
     const router = useRouter();
@@ -32,7 +35,11 @@ const Detailspage = ({ params }) => {
 
         const fetchPetDetails = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets/${id}`, { cache: "no-store" });
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/add-pets/${id}`, { cache: "no-store",
+
+              credentials: 'include' // <--- ADD THIS
+
+                 });
                 if (!res.ok) {
                     setError(`Error: ${res.status}`);
                     return;
@@ -47,11 +54,11 @@ const Detailspage = ({ params }) => {
         };
         fetchPetDetails();
     }, [id]);
-
+//handeling adopt pet
     const handleAdoptPet = async (e) => {
         e.preventDefault();
         
-        // Added check to ensure user is logged in before allowing adoption
+       
         if (!session) {
             toast.error("Please login to request adoption.");
             router.push("/login");

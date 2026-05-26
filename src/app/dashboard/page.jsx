@@ -25,7 +25,7 @@ export default function DashboardPage() {
 
       try {
         setLoading(true);
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
+        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ;
 
         const [listingsRes, requestsRes] = await Promise.all([
           fetch(`${baseUrl}/my-pets/${session.user.email}`),
